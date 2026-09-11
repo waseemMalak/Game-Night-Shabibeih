@@ -182,14 +182,17 @@ let teams = [
     }
 ];
 
-// Team whose turn it currently is
+// Normal turn
 let currentTeamIndex = 0;
 
-// Currently opened question
+// Current question
 let currentQuestion = null;
 
-// Button belonging to current question
+// Current board tile
 let currentPointButton = null;
+
+// Teams that already attempted the current question
+let attemptedTeamIds = [];
 
 
 // =========================
@@ -223,8 +226,6 @@ const modalAnswer = document.getElementById("modalAnswer");
 
 const answerContainer = document.getElementById("answerContainer");
 
-const showAnswerBtn = document.getElementById("showAnswerBtn");
-
 const hostDecision = document.getElementById("hostDecision");
 
 const correctBtn = document.getElementById("correctBtn");
@@ -233,6 +234,20 @@ const wrongBtn = document.getElementById("wrongBtn");
 const closeQuestionBtn = document.getElementById("closeQuestionBtn");
 
 const currentTurnElement = document.getElementById("currentTurn");
+
+
+// =========================
+// TEAM SELECTION MODAL
+// =========================
+
+const teamSelectionModal =
+    document.getElementById("teamSelectionModal");
+
+const availableTeamsElement =
+    document.getElementById("availableTeams");
+
+const closeTeamSelectionBtn =
+    document.getElementById("closeTeamSelectionBtn");
 
 
 // =========================
@@ -278,7 +293,6 @@ removeTeamBtn.addEventListener("click", () => {
 
     teams.pop();
 
-    // Make sure current team index is still valid
     if (currentTeamIndex >= teams.length) {
         currentTeamIndex = 0;
     }
@@ -299,7 +313,8 @@ function renderTeamSetup() {
 
     teams.forEach((team, index) => {
 
-        const teamElement = document.createElement("div");
+        const teamElement =
+            document.createElement("div");
 
         teamElement.className = "team-item";
 
@@ -320,9 +335,11 @@ function renderTeamSetup() {
         teamListElement.appendChild(teamElement);
     });
 
+    addTeamBtn.disabled =
+        numberOfTeams >= 5;
 
-    addTeamBtn.disabled = numberOfTeams >= 5;
-    removeTeamBtn.disabled = numberOfTeams <= 1;
+    removeTeamBtn.disabled =
+        numberOfTeams <= 1;
 }
 
 
@@ -332,35 +349,33 @@ function renderTeamSetup() {
 
 startGameBtn.addEventListener("click", () => {
 
-    const inputs = document.querySelectorAll(".team-name");
+    const inputs =
+        document.querySelectorAll(".team-name");
 
     inputs.forEach(input => {
 
-        const teamId = Number(input.dataset.teamId);
+        const teamId =
+            Number(input.dataset.teamId);
 
-        const team = teams.find(t => t.id === teamId);
+        const team =
+            teams.find(t => t.id === teamId);
 
         if (team) {
 
             team.name =
-                input.value.trim() || `Team ${teamId}`;
+                input.value.trim() ||
+                `Team ${teamId}`;
         }
     });
 
-
     // Team 1 starts
-
     currentTeamIndex = 0;
 
-
     // Switch screens
-
     setupScreen.classList.add("hidden");
     gameScreen.classList.remove("hidden");
 
-
     // Render game
-
     renderScoreboard();
     renderGameBoard();
     updateCurrentTurn();
@@ -377,7 +392,8 @@ function renderScoreboard() {
 
     teams.forEach(team => {
 
-        const scoreElement = document.createElement("div");
+        const scoreElement =
+            document.createElement("div");
 
         scoreElement.className = "score-team";
 
@@ -417,11 +433,15 @@ function renderGameBoard() {
         const titleElement =
             document.createElement("div");
 
-        titleElement.className = "category-title";
+        titleElement.className =
+            "category-title";
 
-        titleElement.textContent = category.name;
+        titleElement.textContent =
+            category.name;
 
-        categoryElement.appendChild(titleElement);
+        categoryElement.appendChild(
+            titleElement
+        );
 
 
         // Point tiles
@@ -431,34 +451,43 @@ function renderGameBoard() {
             const pointButton =
                 document.createElement("button");
 
-            pointButton.className = "point-tile";
+            pointButton.className =
+                "point-tile";
 
-            pointButton.textContent = points;
+            pointButton.textContent =
+                points;
 
 
-            pointButton.addEventListener("click", () => {
+            pointButton.addEventListener(
+                "click",
+                () => {
 
-                if (
-                    pointButton.classList.contains("used")
-                ) {
-                    return;
+                    if (
+                        pointButton.classList.contains(
+                            "used"
+                        )
+                    ) {
+                        return;
+                    }
+
+                    openQuestion(
+                        category,
+                        points,
+                        pointButton
+                    );
                 }
-
-                openQuestion(
-                    category,
-                    points,
-                    pointButton
-                );
-
-            });
+            );
 
 
-            categoryElement.appendChild(pointButton);
-
+            categoryElement.appendChild(
+                pointButton
+            );
         });
 
 
-        gameBoardElement.appendChild(categoryElement);
+        gameBoardElement.appendChild(
+            categoryElement
+        );
     });
 }
 
@@ -476,8 +505,12 @@ function openQuestion(
     const questionData =
         category.questions[points];
 
+    if (!questionData) {
+        return;
+    }
 
-    // Save current question
+
+    // Save question
 
     currentQuestion = {
         category: category.name,
@@ -487,7 +520,17 @@ function openQuestion(
     };
 
 
-    currentPointButton = pointButton;
+    // Save board tile
+
+    currentPointButton =
+        pointButton;
+
+
+    // Reset attempted teams
+
+    attemptedTeamIds = [
+        teams[currentTeamIndex].id
+    ];
 
 
     // Fill modal
@@ -505,48 +548,53 @@ function openQuestion(
         questionData.answer;
 
 
-    // IMPORTANT:
-    // Hide answer when opening a new question
+    // Hide answer
 
-    answerContainer.classList.add("hidden");
-
-
-    // Show SHOW ANSWER button
-
-    showAnswerBtn.classList.remove("hidden");
+    answerContainer.classList.add(
+        "hidden"
+    );
 
 
-    // Hide CORRECT / WRONG buttons
+    // Show host decision
 
-    hostDecision.classList.add("hidden");
+    hostDecision.classList.remove(
+        "hidden"
+    );
 
 
-    // Open popup
+    // Update answering team
 
-    questionModal.classList.remove("hidden");
+    updateAnsweringTeam();
+
+
+    // Open question popup
+
+    questionModal.classList.remove(
+        "hidden"
+    );
 }
 
 
 // =========================
-// SHOW ANSWER
+// UPDATE ANSWERING TEAM
 // =========================
 
-showAnswerBtn.addEventListener("click", () => {
+function updateAnsweringTeam() {
 
-    // Show answer
+    const answeringTeam =
+        teams[currentTeamIndex];
 
-    answerContainer.classList.remove("hidden");
+    const answeringTeamElement =
+        document.getElementById(
+            "answeringTeam"
+        );
 
+    if (answeringTeamElement) {
 
-    // Hide SHOW ANSWER
-
-    showAnswerBtn.classList.add("hidden");
-
-
-    // Show host decision buttons
-
-    hostDecision.classList.remove("hidden");
-});
+        answeringTeamElement.textContent =
+            answeringTeam.name;
+    }
+}
 
 
 // =========================
@@ -560,20 +608,23 @@ correctBtn.addEventListener("click", () => {
     }
 
 
-    const currentTeam =
+    const answeringTeam =
         teams[currentTeamIndex];
 
 
-    // Add points
+    // Award points
 
-    currentTeam.score +=
+    answeringTeam.score +=
         currentQuestion.points;
 
 
     // Mark question as used
 
     if (currentPointButton) {
-        currentPointButton.classList.add("used");
+
+        currentPointButton.classList.add(
+            "used"
+        );
     }
 
 
@@ -582,14 +633,33 @@ correctBtn.addEventListener("click", () => {
     renderScoreboard();
 
 
-    // Close question
+    // Reveal answer
 
-    closeQuestion();
+    answerContainer.classList.remove(
+        "hidden"
+    );
 
 
-    // Move to next team
+    // Hide decision buttons
 
-    nextTeam();
+    hostDecision.classList.add(
+        "hidden"
+    );
+
+
+    /*
+        Wait a little so the host/team
+        can see the answer before
+        moving to the next team.
+    */
+
+    setTimeout(() => {
+
+        closeQuestion();
+
+        nextTeam();
+
+    }, 2500);
 });
 
 
@@ -604,47 +674,222 @@ wrongBtn.addEventListener("click", () => {
     }
 
 
-    /*
-        FOR NOW:
+    const answeringTeam =
+        teams[currentTeamIndex];
 
-        We are ignoring the buzzer.
 
-        The original team gets no points.
-        The question is NOT marked as used.
+    // Make sure this team is recorded
 
-        Later this is where we will add:
+    if (
+        !attemptedTeamIds.includes(
+            answeringTeam.id
+        )
+    ) {
 
-        OPEN BUZZERS
-        ↓
-        Team 2 / Team 3 / Team 4
-        ↓
-        First team to buzz
-        ↓
-        Correct = +points
-        Wrong = -points
-    */
+        attemptedTeamIds.push(
+            answeringTeam.id
+        );
+    }
 
 
     console.log(
-        `${teams[currentTeamIndex].name} answered incorrectly.`
+        `${answeringTeam.name} answered incorrectly.`
     );
 
 
-    // Close popup
+    // Hide host decision
 
-    closeQuestion();
+    hostDecision.classList.add(
+        "hidden"
+    );
 
 
-    // IMPORTANT:
-    // We DO NOT move to the next normal team here.
-    //
-    // Because another team should get the chance
-    // to steal this question later.
+    // Check if another team can answer
+
+    openTeamSelection();
 });
 
 
 // =========================
-// NEXT TEAM
+// OPEN TEAM SELECTION
+// =========================
+
+function openTeamSelection() {
+
+    if (!teamSelectionModal) {
+        handleNoTeamsRemaining();
+        return;
+    }
+
+
+    availableTeamsElement.innerHTML = "";
+
+
+    // Find teams that haven't tried yet
+
+    const availableTeams =
+        teams.filter(team =>
+            !attemptedTeamIds.includes(
+                team.id
+            )
+        );
+
+
+    // If nobody remains
+
+    if (availableTeams.length === 0) {
+
+        handleNoTeamsRemaining();
+
+        return;
+    }
+
+
+    // Create button for each available team
+
+    availableTeams.forEach(team => {
+
+        const teamButton =
+            document.createElement("button");
+
+        teamButton.className =
+            "available-team-btn";
+
+        teamButton.textContent =
+            team.name;
+
+
+        teamButton.addEventListener(
+            "click",
+            () => {
+
+                selectNextTeam(team);
+            }
+        );
+
+
+        availableTeamsElement.appendChild(
+            teamButton
+        );
+    });
+
+
+    // Open selection popup
+
+    teamSelectionModal.classList.remove(
+        "hidden"
+    );
+}
+
+
+// =========================
+// SELECT NEXT TEAM
+// =========================
+
+function selectNextTeam(team) {
+
+    // Change current answering team
+
+    currentTeamIndex =
+        teams.findIndex(
+            t => t.id === team.id
+        );
+
+
+    // Record that this team attempted
+
+    if (
+        !attemptedTeamIds.includes(
+            team.id
+        )
+    ) {
+
+        attemptedTeamIds.push(
+            team.id
+        );
+    }
+
+
+    // Close team selection
+
+    teamSelectionModal.classList.add(
+        "hidden"
+    );
+
+
+    // Update answering team display
+
+    updateAnsweringTeam();
+
+
+    // Show CORRECT / WRONG again
+
+    hostDecision.classList.remove(
+        "hidden"
+    );
+
+
+    // Keep current turn display showing
+    // the team currently answering
+
+    updateCurrentTurn();
+}
+
+
+// =========================
+// EVERYONE WRONG
+// =========================
+
+function handleNoTeamsRemaining() {
+
+    console.log(
+        "All teams answered incorrectly."
+    );
+
+
+    // Reveal answer
+
+    answerContainer.classList.remove(
+        "hidden"
+    );
+
+
+    // Hide decision buttons
+
+    hostDecision.classList.add(
+        "hidden"
+    );
+
+
+    // Mark question as used
+
+    if (currentPointButton) {
+
+        currentPointButton.classList.add(
+            "used"
+        );
+    }
+
+
+    /*
+        No points are awarded.
+
+        Wait so everyone can see
+        the correct answer.
+    */
+
+    setTimeout(() => {
+
+        closeQuestion();
+
+        nextTeam();
+
+    }, 2500);
+}
+
+
+// =========================
+// NEXT NORMAL TEAM
 // =========================
 
 function nextTeam() {
@@ -652,7 +897,11 @@ function nextTeam() {
     currentTeamIndex++;
 
 
-    if (currentTeamIndex >= teams.length) {
+    if (
+        currentTeamIndex >=
+        teams.length
+    ) {
+
         currentTeamIndex = 0;
     }
 
@@ -676,8 +925,13 @@ function updateCurrentTurn() {
         teams[currentTeamIndex];
 
 
+    if (!currentTeam) {
+        return;
+    }
+
+
     currentTurnElement.textContent =
-        `${currentTeam.name}'s Turn`;
+        currentTeam.name + "'s Turn";
 }
 
 
@@ -687,21 +941,63 @@ function updateCurrentTurn() {
 
 function closeQuestion() {
 
-    questionModal.classList.add("hidden");
+    questionModal.classList.add(
+        "hidden"
+    );
+
+
+    if (teamSelectionModal) {
+
+        teamSelectionModal.classList.add(
+            "hidden"
+        );
+    }
 
 
     currentQuestion = null;
 
     currentPointButton = null;
+
+    attemptedTeamIds = [];
 }
 
 
 // =========================
-// CLOSE BUTTON
+// CLOSE QUESTION BUTTON
 // =========================
 
-closeQuestionBtn.addEventListener("click", () => {
+closeQuestionBtn.addEventListener(
+    "click",
+    () => {
 
-    closeQuestion();
+        closeQuestion();
+    }
+);
 
-});
+
+// =========================
+// CLOSE TEAM SELECTION
+// =========================
+
+if (closeTeamSelectionBtn) {
+
+    closeTeamSelectionBtn.addEventListener(
+        "click",
+        () => {
+
+            teamSelectionModal.classList.add(
+                "hidden"
+            );
+
+            /*
+                Bring the host back to the
+                CORRECT / WRONG decision
+                for the current team.
+            */
+
+            hostDecision.classList.remove(
+                "hidden"
+            );
+        }
+    );
+}
