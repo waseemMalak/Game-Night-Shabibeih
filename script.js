@@ -4,6 +4,45 @@
 
 const pointValues = [100, 200, 300, 400, 500];
 
+// =========================
+// SOUNDS
+// =========================
+
+const correctSound = new Audio("./sounds/correct.mp3");
+const wrongSound = new Audio("./sounds/wrong.mp3");
+
+correctSound.preload = "auto";
+wrongSound.preload = "auto";
+
+correctSound.volume = 0.8;
+wrongSound.volume = 0.8;
+
+
+// =========================
+// SOUND ERROR / LOAD TESTING
+// =========================
+
+correctSound.addEventListener("error", () => {
+    console.error("❌ Could not load sounds/correct.mp3");
+});
+
+wrongSound.addEventListener("error", () => {
+    console.error("❌ Could not load sounds/wrong.mp3");
+});
+
+correctSound.addEventListener("canplaythrough", () => {
+    console.log("✅ Correct sound loaded");
+});
+
+wrongSound.addEventListener("canplaythrough", () => {
+    console.log("✅ Wrong sound loaded");
+});
+
+
+// =========================
+// QUESTIONS
+// =========================
+
 const categories = [
     {
         name: "أفلام وموسيقى",
@@ -193,6 +232,7 @@ let currentPointButton = null;
 
 // Teams that already attempted the current question
 let attemptedTeamIds = [];
+
 // Whether the current question has been completed
 let questionFinished = false;
 
@@ -535,6 +575,11 @@ function openQuestion(
     ];
 
 
+    // Reset finished state
+
+    questionFinished = false;
+
+
     // Fill modal
 
     modalCategory.textContent =
@@ -603,12 +648,24 @@ function updateAnsweringTeam() {
 // CORRECT ANSWER
 // =========================
 
-
 correctBtn.addEventListener("click", () => {
 
     if (!currentQuestion) {
         return;
     }
+
+
+    // Play correct sound
+
+    correctSound.currentTime = 0;
+
+    correctSound.play().catch(error => {
+        console.error(
+            "Could not play correct sound:",
+            error
+        );
+    });
+
 
     const answeringTeam =
         teams[currentTeamIndex];
@@ -623,7 +680,10 @@ correctBtn.addEventListener("click", () => {
     // Mark question as used
 
     if (currentPointButton) {
-        currentPointButton.classList.add("used");
+
+        currentPointButton.classList.add(
+            "used"
+        );
     }
 
 
@@ -634,16 +694,22 @@ correctBtn.addEventListener("click", () => {
 
     // Reveal answer
 
-    answerContainer.classList.remove("hidden");
+    answerContainer.classList.remove(
+        "hidden"
+    );
 
 
     // Hide CORRECT / WRONG buttons
 
-    hostDecision.classList.add("hidden");
+    hostDecision.classList.add(
+        "hidden"
+    );
 
 
-    // Question is now finished
-    // but we DO NOT close it automatically
+    // Question is finished
+
+    // It stays open until the host
+    // presses the X button.
 
     questionFinished = true;
 });
@@ -658,6 +724,18 @@ wrongBtn.addEventListener("click", () => {
     if (!currentQuestion) {
         return;
     }
+
+
+    // Play wrong sound
+
+    wrongSound.currentTime = 0;
+
+    wrongSound.play().catch(error => {
+        console.error(
+            "Could not play wrong sound:",
+            error
+        );
+    });
 
 
     const answeringTeam =
@@ -703,7 +781,9 @@ wrongBtn.addEventListener("click", () => {
 function openTeamSelection() {
 
     if (!teamSelectionModal) {
+
         handleNoTeamsRemaining();
+
         return;
     }
 
@@ -857,20 +937,10 @@ function handleNoTeamsRemaining() {
     }
 
 
-    /*
-        No points are awarded.
+    // Question is finished.
+    // It will stay open until X is pressed.
 
-        Wait so everyone can see
-        the correct answer.
-    */
-
-    setTimeout(() => {
-
-        closeQuestion();
-
-        nextTeam();
-
-    }, 2500);
+    questionFinished = true;
 }
 
 
@@ -940,11 +1010,24 @@ function closeQuestion() {
     }
 
 
+    // If the question was completed,
+    // move to the next normal team.
+
+    if (questionFinished) {
+
+        nextTeam();
+    }
+
+
+    // Clear question state
+
     currentQuestion = null;
 
     currentPointButton = null;
 
     attemptedTeamIds = [];
+
+    questionFinished = false;
 }
 
 
@@ -974,6 +1057,7 @@ if (closeTeamSelectionBtn) {
             teamSelectionModal.classList.add(
                 "hidden"
             );
+
 
             /*
                 Bring the host back to the
