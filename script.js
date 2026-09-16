@@ -193,6 +193,8 @@ let currentPointButton = null;
 
 // Teams that already attempted the current question
 let attemptedTeamIds = [];
+// Whether the current question has been completed
+let questionFinished = false;
 
 
 // =========================
@@ -601,12 +603,12 @@ function updateAnsweringTeam() {
 // CORRECT ANSWER
 // =========================
 
+
 correctBtn.addEventListener("click", () => {
 
     if (!currentQuestion) {
         return;
     }
-
 
     const answeringTeam =
         teams[currentTeamIndex];
@@ -621,10 +623,7 @@ correctBtn.addEventListener("click", () => {
     // Mark question as used
 
     if (currentPointButton) {
-
-        currentPointButton.classList.add(
-            "used"
-        );
+        currentPointButton.classList.add("used");
     }
 
 
@@ -635,31 +634,18 @@ correctBtn.addEventListener("click", () => {
 
     // Reveal answer
 
-    answerContainer.classList.remove(
-        "hidden"
-    );
+    answerContainer.classList.remove("hidden");
 
 
-    // Hide decision buttons
+    // Hide CORRECT / WRONG buttons
 
-    hostDecision.classList.add(
-        "hidden"
-    );
+    hostDecision.classList.add("hidden");
 
 
-    /*
-        Wait a little so the host/team
-        can see the answer before
-        moving to the next team.
-    */
+    // Question is now finished
+    // but we DO NOT close it automatically
 
-    setTimeout(() => {
-
-        closeQuestion();
-
-        nextTeam();
-
-    }, 2500);
+    questionFinished = true;
 });
 
 
