@@ -236,6 +236,16 @@ let attemptedTeamIds = [];
 // Whether the current question has been completed
 let questionFinished = false;
 
+// IMPORTANT:
+// This remembers the team whose normal turn started the question.
+// Example:
+// Team 1 selects question
+// Team 1 wrong
+// Team 3 answers
+// Team 3 correct
+// Next normal turn = Team 2
+let questionStartingTeamIndex = 0;
+
 
 // =========================
 // DOM ELEMENTS
@@ -552,6 +562,13 @@ function openQuestion(
     }
 
 
+    // IMPORTANT:
+    // Remember the team that originally selected
+    // the question.
+    questionStartingTeamIndex =
+        currentTeamIndex;
+
+
     // Save question
 
     currentQuestion = {
@@ -569,6 +586,7 @@ function openQuestion(
 
 
     // Reset attempted teams
+    // The team whose turn it is gets the first attempt.
 
     attemptedTeamIds = [
         teams[currentTeamIndex].id
@@ -707,9 +725,7 @@ correctBtn.addEventListener("click", () => {
 
 
     // Question is finished
-
-    // It stays open until the host
-    // presses the X button.
+    // It stays open until the host presses X.
 
     questionFinished = true;
 });
@@ -895,8 +911,7 @@ function selectNextTeam(team) {
     );
 
 
-    // Keep current turn display showing
-    // the team currently answering
+    // Update display
 
     updateCurrentTurn();
 }
@@ -938,7 +953,7 @@ function handleNoTeamsRemaining() {
 
 
     // Question is finished.
-    // It will stay open until X is pressed.
+    // It stays open until X is pressed.
 
     questionFinished = true;
 }
@@ -952,7 +967,6 @@ function nextTeam() {
 
     currentTeamIndex++;
 
-
     if (
         currentTeamIndex >=
         teams.length
@@ -960,7 +974,6 @@ function nextTeam() {
 
         currentTeamIndex = 0;
     }
-
 
     updateCurrentTurn();
 }
@@ -1010,12 +1023,40 @@ function closeQuestion() {
     }
 
 
-    // If the question was completed,
-    // move to the next normal team.
+    // IMPORTANT:
+    //
+    // Continue the normal turn order from
+    // the team that originally selected the question.
+    //
+    // Example:
+    //
+    // Team 1 selects
+    // Team 1 wrong
+    // Team 3 answers correctly
+    //
+    // Next = Team 2
+    //
+    // NOT Team 1.
+    // NOT Team 3.
 
     if (questionFinished) {
 
-        nextTeam();
+        currentTeamIndex =
+            questionStartingTeamIndex + 1;
+
+
+        // Wrap around
+
+        if (
+            currentTeamIndex >=
+            teams.length
+        ) {
+
+            currentTeamIndex = 0;
+        }
+
+
+        updateCurrentTurn();
     }
 
 
