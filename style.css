@@ -1,4 +1,4 @@
-```css
+
 /* =========================================================
    🍬 من سيربح البونبون؟
    GAME SHOW UI
@@ -708,6 +708,10 @@ body {
    QUESTION HEADER
 ========================================================= */
 
+/* =========================================================
+   QUESTION HEADER
+========================================================= */
+
 .question-header {
     background:
         linear-gradient(
@@ -716,27 +720,45 @@ body {
             #18233d
         );
 
-    padding: 18px 25px;
+    padding: 20px 25px;
 
     display: flex;
 
-    justify-content: space-between;
+    justify-content: center;
 
     align-items: center;
+
+    position: relative;
 
     border-bottom: 1px solid var(--border);
 }
 
 .modal-category {
-    font-size: 18px;
+    font-size: 28px;
+
+    line-height: 1.4;
 
     font-weight: 900;
 
-    color: var(--text-secondary);
+    color: white;
+
+    text-align: center;
+
+    direction: rtl;
+
+    width: 100%;
+
+    padding: 0 80px;
 }
 
 .modal-points {
-    margin-left: 15px;
+    position: absolute;
+
+    right: 25px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
 
     background:
         linear-gradient(
@@ -747,21 +769,33 @@ body {
 
     color: #211600;
 
-    padding: 7px 15px;
+    padding: 8px 17px;
 
     border-radius: 8px;
 
+    font-size: 18px;
+
     font-weight: 900;
+
+    text-align: center;
 }
 
 .close-btn {
+    position: absolute;
+
+    left: 25px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
     border: none;
 
     background: transparent;
 
     color: var(--text-muted);
 
-    font-size: 35px;
+    font-size: 38px;
 
     cursor: pointer;
 
@@ -775,7 +809,9 @@ body {
 .close-btn:hover {
     color: white;
 
-    transform: rotate(90deg);
+    transform:
+        translateY(-50%)
+        rotate(90deg);
 }
 
 /* =========================================================
