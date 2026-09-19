@@ -1,677 +1,1201 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  }
+```css
+/* =========================================================
+   🍬 من سيربح البونبون؟
+   GAME SHOW UI
+========================================================= */
 
-body {
-font-family: Arial, sans-serif;
-background: #111827;
-color: white;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-/* =========================
-GENERAL
-========================= */
+:root {
+    --bg-main: #0b1020;
+    --bg-secondary: #121a30;
+    --bg-card: #18223a;
+    --bg-card-light: #202d4a;
+
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-light: #818cf8;
+
+    --gold: #fbbf24;
+    --gold-dark: #d97706;
+    --gold-light: #fde68a;
+
+    --green: #22c55e;
+    --green-dark: #15803d;
+
+    --red: #ef4444;
+    --red-dark: #b91c1c;
+
+    --text-main: #ffffff;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+
+    --border: rgba(255, 255, 255, 0.08);
+
+    --shadow:
+        0 20px 60px rgba(0, 0, 0, 0.35);
+
+    --shadow-heavy:
+        0 30px 90px rgba(0, 0, 0, 0.55);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(99, 102, 241, 0.18),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at bottom right,
+            rgba(251, 191, 36, 0.08),
+            transparent 30%
+        ),
+        var(--bg-main);
+
+    color: var(--text-main);
+    min-height: 100vh;
+}
+
+/* =========================================================
+   GENERAL
+========================================================= */
 
 .screen {
-min-height: 100vh;
-width: 100%;
+    min-height: 100vh;
+    width: 100%;
 }
 
 .hidden {
-display: none !important;
+    display: none !important;
 }
 
-/* =========================
-SETUP SCREEN
-========================= */
+/* =========================================================
+   SETUP SCREEN
+========================================================= */
 
 #setupScreen {
-display: flex;
-justify-content: center;
-align-items: center;
-padding: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
 }
 
 .setup-card {
-width: 450px;
-max-width: 100%;
-background: #1f2937;
-border-radius: 20px;
-padding: 40px;
-text-align: center;
-box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    width: 500px;
+    max-width: 100%;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(32, 45, 74, 0.96),
+            rgba(18, 26, 48, 0.98)
+        );
+
+    border: 1px solid var(--border);
+    border-radius: 26px;
+
+    padding: 45px;
+
+    text-align: center;
+
+    box-shadow: var(--shadow-heavy);
+
+    position: relative;
+    overflow: hidden;
+}
+
+.setup-card::before {
+    content: "";
+    position: absolute;
+
+    width: 220px;
+    height: 220px;
+
+    background: rgba(99, 102, 241, 0.15);
+
+    border-radius: 50%;
+
+    top: -100px;
+    right: -80px;
+
+    filter: blur(10px);
+}
+
+.setup-card::after {
+    content: "";
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    background: rgba(251, 191, 36, 0.08);
+
+    border-radius: 50%;
+
+    bottom: -100px;
+    left: -70px;
+
+    filter: blur(10px);
+}
+
+.setup-card > * {
+    position: relative;
+    z-index: 2;
 }
 
 .setup-card h1 {
-font-size: 42px;
-margin-bottom: 8px;
+    font-size: 42px;
+    font-weight: 900;
+
+    margin-bottom: 10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ffffff,
+            var(--gold-light),
+            #ffffff
+        );
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .subtitle {
-color: #9ca3af;
-font-size: 18px;
-margin-bottom: 35px;
+    color: var(--text-muted);
+    font-size: 17px;
+    margin-bottom: 35px;
 }
 
-/* =========================
-TEAM CONTROL
-========================= */
+/* =========================================================
+   TEAM CONTROL
+========================================================= */
 
 .team-control {
-display: flex;
-justify-content: center;
-align-items: center;
-gap: 30px;
-margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: 30px;
+
+    margin-bottom: 30px;
 }
 
 .team-btn {
-width: 55px;
-height: 55px;
-border: none;
-border-radius: 50%;
-background: #374151;
-color: white;
-font-size: 32px;
-cursor: pointer;
-transition: 0.2s;
+    width: 58px;
+    height: 58px;
+
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            145deg,
+            #273554,
+            #17213a
+        );
+
+    color: white;
+
+    font-size: 32px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .team-btn:hover {
-background: #4b5563;
-transform: scale(1.05);
+    background: var(--primary);
+    transform: scale(1.08);
+
+    box-shadow:
+        0 8px 25px rgba(99, 102, 241, 0.35);
+}
+
+.team-btn:active {
+    transform: scale(0.96);
 }
 
 .team-btn:disabled {
-opacity: 0.3;
-cursor: not-allowed;
-transform: none;
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .team-count {
-min-width: 90px;
+    min-width: 100px;
 }
 
 .team-count span {
-display: block;
-font-size: 42px;
-font-weight: bold;
+    display: block;
+
+    font-size: 48px;
+    font-weight: 900;
+
+    color: var(--gold);
 }
 
 .team-count small {
-color: #9ca3af;
-font-size: 14px;
+    color: var(--text-muted);
+    font-size: 14px;
 }
 
-/* =========================
-TEAM LIST
-========================= */
+/* =========================================================
+   TEAM LIST
+========================================================= */
 
 .team-list {
-display: flex;
-flex-direction: column;
-gap: 10px;
-margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+
+    margin-bottom: 30px;
 }
 
 .team-item {
-display: flex;
-align-items: center;
-gap: 12px;
-background: #111827;
-padding: 12px 15px;
-border-radius: 10px;
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    background: rgba(11, 16, 32, 0.75);
+
+    border: 1px solid var(--border);
+
+    padding: 12px 15px;
+
+    border-radius: 12px;
+
+    transition: border 0.2s ease;
+}
+
+.team-item:focus-within {
+    border-color: var(--primary-light);
 }
 
 .team-number {
-font-weight: bold;
-width: 70px;
-text-align: left;
+    font-weight: bold;
+
+    width: 70px;
+
+    text-align: left;
+
+    color: var(--text-secondary);
 }
 
 .team-name {
-flex: 1;
-background: #374151;
-border: 1px solid #4b5563;
-border-radius: 7px;
-padding: 10px;
-color: white;
-font-size: 15px;
+    flex: 1;
+
+    background: #202d4a;
+
+    border: 1px solid #334155;
+
+    border-radius: 8px;
+
+    padding: 11px;
+
+    color: white;
+
+    font-size: 15px;
+
+    transition:
+        border 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .team-name:focus {
-outline: none;
-border-color: #60a5fa;
+    outline: none;
+
+    border-color: var(--primary-light);
+
+    box-shadow:
+        0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
-/* =========================
-START BUTTON
-========================= */
+/* =========================================================
+   START BUTTON
+========================================================= */
 
 .start-btn {
-width: 100%;
-padding: 16px;
-border: none;
-border-radius: 10px;
-background: #2563eb;
-color: white;
-font-size: 18px;
-font-weight: bold;
-cursor: pointer;
-transition: 0.2s;
+    width: 100%;
+
+    padding: 17px;
+
+    border: none;
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--primary-dark)
+        );
+
+    color: white;
+
+    font-size: 19px;
+    font-weight: 900;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .start-btn:hover {
-background: #1d4ed8;
-transform: translateY(-2px);
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 12px 30px rgba(79, 70, 229, 0.35);
 }
 
-/* =========================
-GAME HEADER
-========================= */
+.start-btn:active {
+    transform: translateY(0);
+}
+
+/* =========================================================
+   GAME HEADER
+========================================================= */
 
 .game-header {
-padding: 20px 30px;
-background: #1f2937;
+    padding: 18px 30px;
 
+    background:
+        linear-gradient(
+            90deg,
+            #11182c,
+            #18223a,
+            #11182c
+        );
 
-display: flex;
-align-items: center;
-justify-content: space-between;
+    border-bottom: 1px solid var(--border);
 
-gap: 20px;
+    display: flex;
 
+    align-items: center;
+    justify-content: space-between;
 
+    gap: 20px;
+
+    position: sticky;
+    top: 0;
+
+    z-index: 100;
 }
 
 .game-header h1 {
-font-size: 28px;
+    font-size: 28px;
+    font-weight: 900;
+
+    white-space: nowrap;
+
+    color: white;
 }
 
-/* =========================
-CURRENT TURN
-========================= */
+/* =========================================================
+   CURRENT TURN
+========================================================= */
 
 .current-turn {
-background: #2563eb;
-padding: 12px 20px;
-border-radius: 10px;
-font-size: 18px;
-font-weight: bold;
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            #7c3aed
+        );
+
+    padding: 12px 20px;
+
+    border-radius: 12px;
+
+    font-size: 17px;
+    font-weight: 900;
+
+    box-shadow:
+        0 8px 25px rgba(99, 102, 241, 0.25);
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    white-space: nowrap;
 }
 
-/* =========================
-SCOREBOARD
-========================= */
+/* =========================================================
+   SCOREBOARD
+========================================================= */
 
 .scoreboard {
-display: flex;
-gap: 10px;
-flex-wrap: wrap;
-justify-content: flex-end;
+    display: flex;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+
+    justify-content: flex-end;
 }
 
 .score-team {
-background: #374151;
-padding: 8px 14px;
-border-radius: 8px;
-min-width: 100px;
+    min-width: 105px;
+
+    padding: 8px 13px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #273554,
+            #1a2540
+        );
+
+    border: 1px solid var(--border);
+
+    text-align: center;
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.18);
 }
 
 .score-team-name {
-display: block;
-font-size: 12px;
-color: #9ca3af;
+    display: block;
+
+    font-size: 12px;
+
+    color: var(--text-muted);
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .score-team-points {
-font-size: 20px;
-font-weight: bold;
+    display: block;
+
+    margin-top: 2px;
+
+    font-size: 21px;
+    font-weight: 900;
+
+    color: var(--gold);
 }
 
-/* =========================
-GAME BOARD
-========================= */
+/* =========================================================
+   GAME BOARD
+========================================================= */
 
 .game-board {
-padding: 30px;
-display: grid;
-grid-template-columns: repeat(6, 1fr);
-gap: 10px;
-min-height: calc(100vh - 100px);
-align-items: stretch;
+    padding: 25px 30px 35px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(6, minmax(0, 1fr));
+
+    gap: 12px;
+
+    min-height:
+        calc(100vh - 95px);
+
+    align-items: stretch;
 }
 
 .category {
-display: flex;
-flex-direction: column;
-gap: 10px;
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+
+    min-width: 0;
 }
+
+/* =========================================================
+   CATEGORY TITLE
+========================================================= */
 
 .category-title {
-min-height: 70px;
-background: #374151;
-border-radius: 10px;
-padding: 15px 8px;
+    min-height: 92px;
 
+    background:
+        linear-gradient(
+            145deg,
+            #29375b,
+            #1c2947
+        );
 
-display: flex;
-align-items: center;
-justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.09);
 
-text-align: center;
+    border-radius: 12px;
 
-font-size: 18px;
-font-weight: bold;
+    padding: 12px 8px;
 
+    display: flex;
 
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    font-size: 20px;
+
+    font-weight: 900;
+
+    line-height: 1.3;
+
+    color: white;
+
+    box-shadow:
+        0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* =========================
-POINT TILES
-========================= */
+/* =========================================================
+   POINT TILES
+========================================================= */
 
 .point-tile {
-flex: 1;
-min-height: 90px;
+    flex: 1;
 
+    min-height: 90px;
 
-border: none;
-border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
 
-background: #2563eb;
-color: white;
+    border-radius: 12px;
 
-font-size: 30px;
-font-weight: bold;
+    background:
+        linear-gradient(
+            145deg,
+            #4f46a5,
+            #3730a3
+        );
 
-cursor: pointer;
+    color: var(--gold-light);
 
-transition: 0.2s;
+    font-size: 30px;
 
+    font-weight: 900;
 
+    cursor: pointer;
+
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease;
+
+    box-shadow:
+        0 7px 18px rgba(0, 0, 0, 0.18);
 }
 
 .point-tile:hover {
-background: #3b82f6;
-transform: scale(1.02);
+    background:
+        linear-gradient(
+            145deg,
+            #6366f1,
+            #4f46e5
+        );
+
+    transform:
+        translateY(-3px)
+        scale(1.025);
+
+    box-shadow:
+        0 12px 25px rgba(79, 70, 229, 0.35);
+}
+
+.point-tile:active {
+    transform: scale(0.98);
 }
 
 .point-tile.used {
-background: #1f2937;
-color: #4b5563;
+    background:
+        linear-gradient(
+            145deg,
+            #151c2f,
+            #101627
+        );
 
+    color: #475569;
 
-cursor: default;
-transform: none;
+    border-color: rgba(255, 255, 255, 0.03);
 
+    cursor: default;
 
+    transform: none;
+
+    box-shadow: none;
 }
 
-/* =========================
-MODAL
-========================= */
+/* =========================================================
+   MODAL
+========================================================= */
 
 .modal {
-position: fixed;
-inset: 0;
+    position: fixed;
 
+    inset: 0;
 
-background: rgba(0, 0, 0, 0.75);
+    background:
+        rgba(3, 7, 18, 0.82);
 
-display: flex;
-justify-content: center;
-align-items: center;
+    backdrop-filter: blur(7px);
 
-padding: 30px;
+    display: flex;
 
-z-index: 1000;
+    justify-content: center;
+    align-items: center;
 
+    padding: 30px;
 
+    z-index: 1000;
 }
 
 .modal.hidden {
-display: none;
+    display: none;
 }
 
-/* =========================
-QUESTION CARD
-========================= */
+/* =========================================================
+   QUESTION CARD
+========================================================= */
 
 .question-card {
-width: 800px;
-max-width: 95%;
+    width: 850px;
 
+    max-width: 95%;
 
-background: #1f2937;
+    background:
+        linear-gradient(
+            145deg,
+            #1d2944,
+            #121b31
+        );
 
-border-radius: 20px;
+    border: 1px solid var(--border);
 
-overflow: hidden;
+    border-radius: 22px;
 
-box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
 
+    box-shadow: var(--shadow-heavy);
 
+    animation: modalIn 0.2s ease;
 }
 
-/* =========================
-QUESTION HEADER
-========================= */
+@keyframes modalIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* =========================================================
+   QUESTION HEADER
+========================================================= */
 
 .question-header {
-background: #111827;
+    background:
+        linear-gradient(
+            90deg,
+            #10172a,
+            #18233d
+        );
 
+    padding: 18px 25px;
 
-padding: 20px 25px;
+    display: flex;
 
-display: flex;
-justify-content: space-between;
-align-items: center;
+    justify-content: space-between;
 
+    align-items: center;
 
+    border-bottom: 1px solid var(--border);
 }
 
 .modal-category {
-font-size: 18px;
-font-weight: bold;
-color: #9ca3af;
+    font-size: 18px;
+
+    font-weight: 900;
+
+    color: var(--text-secondary);
 }
 
 .modal-points {
-margin-left: 15px;
+    margin-left: 15px;
 
+    background:
+        linear-gradient(
+            135deg,
+            var(--gold),
+            var(--gold-dark)
+        );
 
-background: #2563eb;
+    color: #211600;
 
-padding: 7px 14px;
+    padding: 7px 15px;
 
-border-radius: 8px;
+    border-radius: 8px;
 
-font-weight: bold;
-
-
+    font-weight: 900;
 }
 
 .close-btn {
-border: none;
-background: transparent;
+    border: none;
 
+    background: transparent;
 
-color: #9ca3af;
+    color: var(--text-muted);
 
-font-size: 35px;
+    font-size: 35px;
 
-cursor: pointer;
+    cursor: pointer;
 
-line-height: 1;
+    line-height: 1;
 
-
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
 }
 
 .close-btn:hover {
-color: white;
+    color: white;
+
+    transform: rotate(90deg);
 }
 
-/* =========================
-QUESTION BODY
-========================= */
+/* =========================================================
+   QUESTION BODY
+========================================================= */
 
 .question-body {
-padding: 40px;
+    padding: 45px;
 
-
-text-align: center;
-
-
+    text-align: center;
 }
 
 .answering-team {
-display: inline-block;
+    display: inline-block;
 
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            #7c3aed
+        );
 
-background: #2563eb;
+    padding: 9px 20px;
 
-padding: 8px 18px;
+    border-radius: 30px;
 
-border-radius: 20px;
+    margin-bottom: 28px;
 
-margin-bottom: 25px;
+    font-size: 16px;
 
-font-size: 16px;
-font-weight: bold;
+    font-weight: 900;
 
-
+    box-shadow:
+        0 7px 20px rgba(99, 102, 241, 0.25);
 }
 
 .question-text {
-font-size: 32px;
-line-height: 1.5;
+    font-size: 32px;
 
+    line-height: 1.55;
 
-font-weight: bold;
+    font-weight: 800;
 
-
+    color: white;
 }
 
-/* =========================
-ANSWER
-========================= */
+/* =========================================================
+   ANSWER
+========================================================= */
 
 .answer-container {
-margin-top: 35px;
+    margin-top: 35px;
 
+    padding: 22px;
 
-padding: 20px;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(34, 197, 94, 0.13),
+            rgba(21, 128, 61, 0.08)
+        );
 
-background: #111827;
+    border:
+        1px solid rgba(34, 197, 94, 0.35);
 
-border-radius: 12px;
+    border-radius: 14px;
 
+    animation: answerIn 0.25s ease;
+}
 
+@keyframes answerIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .answer-label {
-color: #9ca3af;
+    color: #86efac;
 
+    font-size: 13px;
 
-font-size: 13px;
+    font-weight: bold;
 
-margin-bottom: 8px;
-
-
+    margin-bottom: 8px;
 }
 
 .answer-text {
-font-size: 25px;
-font-weight: bold;
+    font-size: 27px;
+
+    font-weight: 900;
+
+    color: white;
 }
 
-/* =========================
-HOST DECISION
-========================= */
+/* =========================================================
+   HOST DECISION
+========================================================= */
 
 .host-decision {
-display: flex;
+    display: flex;
 
+    gap: 15px;
 
-gap: 15px;
-
-padding: 0 40px 35px;
-
-
+    padding:
+        0 40px 35px;
 }
 
 .host-decision button {
-flex: 1;
+    flex: 1;
 
+    padding: 17px;
 
-padding: 16px;
+    border: none;
 
-border: none;
-border-radius: 10px;
+    border-radius: 11px;
 
-color: white;
+    color: white;
 
-font-size: 17px;
-font-weight: bold;
+    font-size: 17px;
 
-cursor: pointer;
+    font-weight: 900;
 
+    cursor: pointer;
 
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.host-decision button:hover {
+    transform: translateY(-2px);
 }
 
 .correct-btn {
-background: #15803d;
+    background:
+        linear-gradient(
+            135deg,
+            #22c55e,
+            #15803d
+        );
+
+    box-shadow:
+        0 8px 20px rgba(34, 197, 94, 0.2);
 }
 
 .correct-btn:hover {
-background: #166534;
+    box-shadow:
+        0 12px 25px rgba(34, 197, 94, 0.3);
 }
 
 .wrong-btn {
-background: #b91c1c;
+    background:
+        linear-gradient(
+            135deg,
+            #ef4444,
+            #b91c1c
+        );
+
+    box-shadow:
+        0 8px 20px rgba(239, 68, 68, 0.2);
 }
 
 .wrong-btn:hover {
-background: #991b1b;
+    box-shadow:
+        0 12px 25px rgba(239, 68, 68, 0.3);
 }
 
-/* =========================
-TEAM SELECTION MODAL
-========================= */
+/* =========================================================
+   TEAM SELECTION MODAL
+========================================================= */
 
 .team-selection-card {
-width: 550px;
-max-width: 95%;
+    width: 550px;
 
+    max-width: 95%;
 
-background: #1f2937;
+    background:
+        linear-gradient(
+            145deg,
+            #1d2944,
+            #121b31
+        );
 
-border-radius: 20px;
+    border: 1px solid var(--border);
 
-overflow: hidden;
+    border-radius: 20px;
 
-box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
 
+    box-shadow: var(--shadow-heavy);
 
+    animation: modalIn 0.2s ease;
 }
 
 .selection-header {
-background: #111827;
+    background:
+        linear-gradient(
+            90deg,
+            #3b1015,
+            #26151d
+        );
 
+    padding: 20px 25px;
 
-padding: 20px 25px;
+    display: flex;
 
-display: flex;
-justify-content: space-between;
-align-items: center;
+    justify-content: space-between;
 
-
+    align-items: center;
 }
 
 .selection-header h2 {
-font-size: 22px;
+    font-size: 22px;
+
+    font-weight: 900;
+
+    color: #fecaca;
 }
 
 .selection-body {
-padding: 35px;
-text-align: center;
+    padding: 35px;
+
+    text-align: center;
 }
 
 .selection-body p {
-color: #9ca3af;
-font-size: 17px;
-margin-bottom: 25px;
+    color: var(--text-secondary);
+
+    font-size: 17px;
+
+    margin-bottom: 25px;
 }
 
-/* =========================
-AVAILABLE TEAMS
-========================= */
+/* =========================================================
+   AVAILABLE TEAMS
+========================================================= */
 
 .available-teams {
-display: grid;
+    display: grid;
 
+    grid-template-columns:
+        repeat(2, 1fr);
 
-grid-template-columns: repeat(2, 1fr);
-
-gap: 12px;
-
-
+    gap: 12px;
 }
 
 .available-team-btn {
-border: none;
+    border: 1px solid rgba(255, 255, 255, 0.08);
 
+    background:
+        linear-gradient(
+            145deg,
+            #29375b,
+            #1d2945
+        );
 
-background: #374151;
-color: white;
+    color: white;
 
-padding: 18px 12px;
+    padding: 18px 12px;
 
-border-radius: 10px;
+    border-radius: 11px;
 
-font-size: 17px;
-font-weight: bold;
+    font-size: 17px;
 
-cursor: pointer;
+    font-weight: 900;
 
-transition: 0.2s;
+    cursor: pointer;
 
-
+    transition:
+        transform 0.18s ease,
+        background 0.18s ease,
+        box-shadow 0.18s ease;
 }
 
 .available-team-btn:hover {
-background: #2563eb;
-transform: translateY(-2px);
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            #7c3aed
+        );
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 10px 25px rgba(99, 102, 241, 0.25);
 }
 
-/* =========================
-RESPONSIVE
-========================= */
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
 
+    .game-header {
+        flex-wrap: wrap;
+    }
 
-.game-header {
-    flex-wrap: wrap;
+    .game-board {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
 }
 
-.game-board {
-    grid-template-columns: repeat(3, 1fr);
+@media (max-width: 750px) {
+
+    .game-header {
+        flex-direction: column;
+
+        align-items: stretch;
+
+        text-align: center;
+    }
+
+    .game-header h1 {
+        font-size: 25px;
+    }
+
+    .current-turn {
+        text-align: center;
+    }
+
+    .scoreboard {
+        justify-content: center;
+    }
+
+    .game-board {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        padding: 15px;
+    }
+
+    .category-title {
+        min-height: 80px;
+
+        font-size: 17px;
+    }
+
+    .point-tile {
+        min-height: 80px;
+
+        font-size: 25px;
+    }
+
+    .question-text {
+        font-size: 24px;
+    }
+
+    .question-body {
+        padding: 30px 20px;
+    }
+
+    .host-decision {
+        padding:
+            0 20px 25px;
+    }
 }
 
+@media (max-width: 500px) {
 
-}
+    #setupScreen {
+        padding: 15px;
+    }
 
-@media (max-width: 600px) {
+    .setup-card {
+        padding: 30px 20px;
+    }
 
+    .setup-card h1 {
+        font-size: 32px;
+    }
 
-.game-board {
-    grid-template-columns: repeat(2, 1fr);
-    padding: 15px;
-}
+    .game-board {
+        grid-template-columns: 1fr 1fr;
 
-.game-header {
-    flex-direction: column;
-}
+        gap: 8px;
+    }
 
-.question-text {
-    font-size: 24px;
-}
+    .category {
+        gap: 8px;
+    }
 
-.question-body {
-    padding: 30px 20px;
-}
+    .category-title {
+        min-height: 75px;
 
-.host-decision {
-    padding: 0 20px 25px;
-}
+        font-size: 15px;
+    }
 
-.available-teams {
-    grid-template-columns: 1fr;
-}
+    .point-tile {
+        min-height: 70px;
 
+        font-size: 22px;
 
+        border-radius: 9px;
+    }
+
+    .score-team {
+        min-width: 90px;
+    }
+
+    .question-header {
+        padding: 15px;
+    }
+
+    .modal-category {
+        font-size: 15px;
+    }
+
+    .modal-points {
+        margin-left: 8px;
+    }
+
+    .available-teams {
+        grid-template-columns: 1fr;
+    }
 }
