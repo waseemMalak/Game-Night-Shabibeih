@@ -1,5 +1,5 @@
 // =========================================================
-// 🍬 من سيربح البونبون؟  —  script.js
+// 🍬 من سيربح البونبون؟ — script.js
 // =========================================================
 
 
@@ -12,19 +12,12 @@ const pointValues = [100, 200, 300, 400, 500];
 const MIN_TEAMS = 1;
 const MAX_TEAMS = 5;
 
-// Default seconds per question
 const DEFAULT_TIME = 30;
+
 
 // =========================================================
 // 🧠 MEMORY CHALLENGE IMAGE
 // =========================================================
-//
-// Put your image inside:
-//
-// images/memory-objects.jpg
-//
-// If your filename is different, change ONLY this line.
-//
 
 const MEMORY_IMAGE_PATH = "./images/memory-object.png";
 
@@ -52,14 +45,14 @@ const TEXT = {
     timerRestart: "↻ إعادة",
     close: "إغلاق",
 
-    // Memory challenge
-    memoryRemembering: "🧠 احفظوا أكبر عدد ممكن من الأشياء!",
-    memoryFinished: "⏰ انتهى الوقت! اذكروا الأشياء التي تذكرونها.",
+    memoryRemembering:
+        "🧠 احفظوا أكبر عدد ممكن من الأشياء!",
 
-    // Team names are intentionally in English
+    memoryFinished:
+        "⏰ انتهى الوقت! اذكروا الأشياء التي تذكرونها.",
+
     teamLabel: n => `Team ${n}`,
 
-    // Turn text is intentionally in English
     turn: name => `${name}'s Turn`
 };
 
@@ -68,8 +61,11 @@ const TEXT = {
 // SOUNDS
 // =========================
 
-const correctSound = new Audio("./sounds/correct.mp3");
-const wrongSound = new Audio("./sounds/wrong.mp3");
+const correctSound =
+    new Audio("./sounds/correct.mp3");
+
+const wrongSound =
+    new Audio("./sounds/wrong.mp3");
 
 correctSound.preload = "auto";
 wrongSound.preload = "auto";
@@ -78,18 +74,26 @@ correctSound.volume = 0.8;
 wrongSound.volume = 0.8;
 
 correctSound.addEventListener("error", () => {
-    console.error("❌ Could not load sounds/correct.mp3");
+    console.error(
+        "❌ Could not load sounds/correct.mp3"
+    );
 });
 
 wrongSound.addEventListener("error", () => {
-    console.error("❌ Could not load sounds/wrong.mp3");
+    console.error(
+        "❌ Could not load sounds/wrong.mp3"
+    );
 });
 
 function playSound(sound) {
+
     sound.currentTime = 0;
 
     sound.play().catch(error => {
-        console.error("Could not play sound:", error);
+        console.error(
+            "Could not play sound:",
+            error
+        );
     });
 }
 
@@ -99,15 +103,21 @@ function playSound(sound) {
 // =========================
 
 function beep() {
+
     try {
+
         const AudioCtx =
             window.AudioContext ||
             window.webkitAudioContext;
 
-        const ctx = new AudioCtx();
+        const ctx =
+            new AudioCtx();
 
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
+        const osc =
+            ctx.createOscillator();
+
+        const gain =
+            ctx.createGain();
 
         osc.frequency.value = 880;
         gain.gain.value = 0.15;
@@ -116,38 +126,32 @@ function beep() {
         gain.connect(ctx.destination);
 
         osc.start();
-        osc.stop(ctx.currentTime + 0.45);
+
+        osc.stop(
+            ctx.currentTime + 0.45
+        );
 
         osc.onended = () => ctx.close();
 
     } catch (error) {
-        console.error("Could not play beep:", error);
+
+        console.error(
+            "Could not play beep:",
+            error
+        );
     }
 }
 
 
-// =========================
-// MYSTERY REWARD POOL
-// =========================
-
-const mysteryRewardPool = [
-    50,
-    100,
-    150,
-    200,
-    300,
-    400,
-    500,
-    0,
-    -100
-];
-
-
-// =========================
+// =========================================================
 // QUESTIONS
-// =========================
+// =========================================================
 
 const categories = [
+
+    // =====================================================
+    // 🎬 أفلام وموسيقى
+    // =====================================================
 
     {
         name: "أفلام وموسيقى",
@@ -187,6 +191,10 @@ const categories = [
     },
 
 
+    // =====================================================
+    // 👤 من أنا؟
+    // =====================================================
+
     {
         name: "من أنا؟",
 
@@ -224,6 +232,10 @@ const categories = [
         }
     },
 
+
+    // =====================================================
+    // 📖 الكتاب المقدس
+    // =====================================================
 
     {
         name: "الكتاب المقدس",
@@ -263,6 +275,10 @@ const categories = [
     },
 
 
+    // =====================================================
+    // 🧠 ألعاب ذهنية
+    // =====================================================
+
     {
         name: "ألعاب ذهنية",
 
@@ -294,13 +310,16 @@ const categories = [
 
             500: {
                 question:
-                    "أمامك 3 صناديق: «تفاح»، «برتقال»، «مختلط». جميع الملصقات خاطئة. يسمح لك بسحب ثمرة واحدة فقط من صندوق واحد. كيف تعرف محتوى الصناديق الثلاثة؟",
-                answer:
-                    "اسحب من الصندوق المكتوب عليه «مختلط» لأنه بالتأكيد ليس مختلطاً. فإذا خرجت تفاحة فهو «تفاح»، وعندها المكتوب عليه «برتقال» هو «مختلط»، والمكتوب عليه «تفاح» هو «برتقال»."
+                   "لديك 9 عملات متطابقة بالشكل، واحدة منها مزيفة ووزنها أخف من العملات الأصلية معك ميزان ذو كفتين. **ما أقل عدد من مرات استخدام الميزان التي تحتاجها بالتأكيد لمعرفة العملة المزيفة؟ وكيف؟**",
+                answer: "مرتان",
             }
         }
     },
 
+
+    // =====================================================
+    // 🎯 تحدي مجهول
+    // =====================================================
 
     {
         name: "تحدي مجهول",
@@ -336,8 +355,7 @@ const categories = [
                 time: 30,
                 question:
                     "لعبة حبل المشنقة: على الفريق تخمين كلمة مكونة من 6 أحرف. كل حرف خاطئ يضيف جزءاً من المشنقة.",
-                answer:
-                    "عنكبوت"
+                answer: "عنكبوت"
             },
 
             500: {
@@ -352,7 +370,7 @@ const categories = [
 
 
     // =====================================================
-    // 🎲 MYSTERY CATEGORY
+    // 🎲 ???
     // =====================================================
 
     {
@@ -362,59 +380,104 @@ const categories = [
 
         questions: {
 
+            // ---------------------------------------------
+            // 100 = -200
+            // ---------------------------------------------
+
             100: {
                 type: "mystery",
                 time: 25,
+
+                reward: -200,
+
                 question:
-                    "🧠 تحدي الذاكرة: أمامكم 12 كلمة لمدة 15 ثانية. بعدها سيتم إخفاؤها. حاولوا تذكر أكبر عدد ممكن.",
+                    "🎉 ألف مبروك!! خسرتو 200 نقطة. 😱",
+
                 answer:
-                    "تحدي ذاكرة"
+                    "-200"
             },
+
+
+            // ---------------------------------------------
+            // 200 = +300
+            // ---------------------------------------------
 
             200: {
                 type: "mystery",
-                time: 20,
+                time: 30,
+
+                reward: 300,
+
                 question:
-                    "🎭 اختاروا شخصاً من الفريق. عنده 20 ثانية ليمثل مهنة معينة بدون كلام، والفريق لازم يخمنها.",
+                    "🎭 اختاروا شخصاً من الفريق. عنده 30 ثانية ليمثل مهنة معينة رح احكيله اياها بدون كلام، والفريق لازم يخمنها.",
+
                 answer:
-                    "تمثيل صامت"
+                    "+300"
             },
+
+
+            // ---------------------------------------------
+            // 300 = +200
+            // ---------------------------------------------
 
             300: {
                 type: "mystery",
                 time: 20,
+
+                reward: 200,
+
                 question:
-                    "👀 انظروا جيداً حولكم. خلال 20 ثانية، يجب على الفريق إيجاد 4 أشياء في الغرفة تشترك في صفة واحدة يحددها المضيف.",
+                    "😎 حظاً أوفر! ربحتوا 200 نقطة!",
+
                 answer:
-                    "تحدي ملاحظة"
+                    "+200"
             },
+
+
+            // ---------------------------------------------
+            // 400 = اسم / حيوان / نبات / جماد / بلاد
+            // ---------------------------------------------
 
             400: {
                 type: "allTeams",
-                time: 30,
-                awards: [100, 50],
+
+                specialScoring:
+                    "nameAnimalPlantObjectCountry",
+
+                time: 60,
+
                 question:
-                    "تحدي لجميع الفرق: اسم حيوان جماد بلاد بحرف ال.",
+                    "📝 تحدي اسم، حيوان، نبات، جماد، بلاد! رح نعطيكم حرف وكل فريق لازم يكتب إجابة لكل فئة.",
+
                 answer:
-                    "كل فريق يكسب 100 نقطة إذا كان جوابه منفرداً وصحيحاً، و 50 نقطة إذا أجاب نفس الاجابة."
+                    "لكل فئة: إجابة صحيحة وفريدة = 100 نقطة، نفس الإجابة الصحيحة للفريقين = 50 نقطة لكل فريق، ولا إجابة صحيحة = 0."
             },
+
+
+            // ---------------------------------------------
+            // 500 = +300
+            // ---------------------------------------------
 
             500: {
                 type: "mystery",
                 time: 15,
+
+                reward: 300,
+
                 question:
                     "⚡ تحدي السرعة: خلال 15 ثانية، على الفريق ذكر 7 أشياء تبدأ بحرف «م». ممنوع تكرار أي إجابة.",
+
                 answer:
-                    "تحدي سرعة"
+                    "+300"
             }
         }
     }
 ];
 
 
-// =========================
+// =========================================================
 // GAME STATE
-// =========================
+// =========================================================
 
 function defaultTeamName(id) {
     return `Team ${id}`;
@@ -449,35 +512,39 @@ let currentQuestion = null;
 let currentPointButton = null;
 
 
-// Teams that already attempted the current question
+// Teams that attempted current question
 let attemptedTeamIds = [];
 
 
-// Whether the current question has been completed
+// Question completed?
 let questionFinished = false;
 
 
-// The team whose normal turn started the question
+// Team that originally selected question
 let questionStartingTeamIndex = 0;
 
 
-// "allTeams" questions
+// Normal all-teams awards
 let allTeamsAwards = {};
 
 
-// Timer state
+// Special category awards
+let allTeamsCategoryAwards = {};
+
+
+// Timer
 let timerInterval = null;
 let timeLeft = 0;
 let timeTotal = 0;
 
 
-// Mystery state
+// Mystery
 let currentMysteryReward = 0;
 
 
-// =========================
+// =========================================================
 // DOM ELEMENTS
-// =========================
+// =========================================================
 
 const setupScreen =
     document.getElementById("setupScreen");
@@ -510,7 +577,10 @@ const currentTurnElement =
     document.getElementById("currentTurn");
 
 
-// Question modal
+// =========================================================
+// QUESTION MODAL
+// =========================================================
+
 const questionModal =
     document.getElementById("questionModal");
 
@@ -551,7 +621,10 @@ const closeQuestionBtn =
     document.getElementById("closeQuestionBtn");
 
 
-// Team selection modal
+// =========================================================
+// TEAM SELECTION MODAL
+// =========================================================
+
 const teamSelectionModal =
     document.getElementById("teamSelectionModal");
 
@@ -562,9 +635,9 @@ const closeTeamSelectionBtn =
     document.getElementById("closeTeamSelectionBtn");
 
 
-// =========================
-// EXTRA UI
-// =========================
+// =========================================================
+// EXTRA CSS
+// =========================================================
 
 const extraStyle =
     document.createElement("style");
@@ -575,6 +648,7 @@ extraStyle.textContent = `
         max-height: 94vh;
         overflow-y: auto;
     }
+
 
     /* =========================
        TIMER
@@ -640,7 +714,7 @@ extraStyle.textContent = `
 
 
     /* =========================
-       🧠 MEMORY CHALLENGE
+       MEMORY CHALLENGE
     ========================= */
 
     .memory-challenge-box {
@@ -675,9 +749,7 @@ extraStyle.textContent = `
         width: 100%;
         max-height: 440px;
         object-fit: contain;
-
         border-radius: 12px;
-
         background: #0b1020;
 
         transition:
@@ -687,24 +759,21 @@ extraStyle.textContent = `
 
     .memory-status {
         margin-top: 15px;
-
         font-size: 21px;
         font-weight: 900;
-
         color: var(--gold-light);
-
         text-align: center;
         direction: rtl;
     }
 
     .memory-status.finished {
         color: #86efac;
-
         animation:
             memoryStatusIn 0.3s ease;
     }
 
     @keyframes memoryStatusIn {
+
         from {
             opacity: 0;
             transform: translateY(8px);
@@ -725,13 +794,18 @@ extraStyle.textContent = `
         width: 100%;
         margin-top: 18px;
         padding: 16px;
+
         border: 1px dashed rgba(255, 255, 255, 0.25);
         border-radius: 11px;
+
         background: transparent;
         color: var(--text-secondary);
+
         font-size: 18px;
         font-weight: 800;
+
         cursor: pointer;
+
         transition:
             background 0.18s ease,
             color 0.18s ease;
@@ -758,9 +832,12 @@ extraStyle.textContent = `
         display: flex;
         align-items: center;
         gap: 10px;
+
         padding: 10px 14px;
+
         border: 1px solid var(--border);
         border-radius: 12px;
+
         background: rgba(11, 16, 32, 0.6);
     }
 
@@ -773,12 +850,16 @@ extraStyle.textContent = `
     .award-btn {
         min-width: 64px;
         padding: 10px 14px;
+
         border: 1px solid var(--border);
         border-radius: 9px;
+
         background: var(--bg-card-light);
         color: var(--text-secondary);
+
         font-size: 17px;
         font-weight: 900;
+
         cursor: pointer;
     }
 
@@ -797,6 +878,7 @@ extraStyle.textContent = `
     .all-team-confirm {
         margin-top: 6px;
         padding: 17px;
+
         border: none;
         border-radius: 11px;
 
@@ -808,9 +890,167 @@ extraStyle.textContent = `
             );
 
         color: white;
+
         font-size: 19px;
         font-weight: 900;
+
         cursor: pointer;
+    }
+
+
+    /* =========================
+       SPECIAL 400 ROUND
+       اسم / حيوان / نبات / جماد / بلاد
+    ========================= */
+
+    .category-score-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        padding: 0 30px 35px;
+    }
+
+    .category-score-intro {
+        padding: 14px 18px;
+
+        border-radius: 12px;
+
+        background: rgba(99, 102, 241, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+
+        color: var(--text-secondary);
+
+        font-size: 16px;
+        font-weight: 700;
+
+        line-height: 1.7;
+        text-align: center;
+        direction: rtl;
+    }
+
+    .category-score-row {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        padding: 15px;
+
+        border: 1px solid var(--border);
+        border-radius: 14px;
+
+        background: rgba(11, 16, 32, 0.65);
+    }
+
+    .category-score-title {
+        font-size: 22px;
+        font-weight: 1000;
+
+        color: var(--gold);
+
+        text-align: center;
+        direction: rtl;
+    }
+
+    .category-score-teams {
+        display: grid;
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 12px;
+    }
+
+    .category-team-score {
+        padding: 12px;
+
+        border: 1px solid var(--border);
+        border-radius: 11px;
+
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .category-team-name {
+        margin-bottom: 9px;
+
+        font-size: 16px;
+        font-weight: 900;
+
+        text-align: center;
+    }
+
+    .category-score-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 7px;
+    }
+
+    .category-award-btn {
+        flex: 1;
+
+        padding: 9px 8px;
+
+        border: 1px solid var(--border);
+        border-radius: 8px;
+
+        background: var(--bg-card-light);
+        color: var(--text-secondary);
+
+        font-size: 15px;
+        font-weight: 900;
+
+        cursor: pointer;
+    }
+
+    .category-award-btn.selected {
+        background:
+            linear-gradient(
+                135deg,
+                var(--primary),
+                #7c3aed
+            );
+
+        color: white;
+        border-color: transparent;
+    }
+
+    .category-total-row {
+        display: grid;
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 12px;
+
+        margin-top: 5px;
+    }
+
+    .category-total {
+        padding: 15px;
+
+        border-radius: 12px;
+
+        background:
+            linear-gradient(
+                135deg,
+                rgba(34, 197, 94, 0.16),
+                rgba(21, 128, 61, 0.12)
+            );
+
+        border: 1px solid rgba(34, 197, 94, 0.25);
+
+        color: white;
+
+        text-align: center;
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .category-total strong {
+        display: block;
+
+        margin-top: 4px;
+
+        font-size: 25px;
+        color: #86efac;
     }
 
 
@@ -839,18 +1079,24 @@ extraStyle.textContent = `
 
     .mystery-reward {
         display: inline-flex;
+
         align-items: center;
         justify-content: center;
+
         margin-top: 18px;
         padding: 10px 22px;
+
         border-radius: 12px;
+
         background:
             linear-gradient(
                 135deg,
                 var(--gold),
                 var(--gold-dark)
             );
+
         color: #211600;
+
         font-size: 24px;
         font-weight: 1000;
     }
@@ -862,6 +1108,7 @@ extraStyle.textContent = `
                 #ef4444,
                 #991b1b
             );
+
         color: white;
     }
 
@@ -872,22 +1119,13 @@ extraStyle.textContent = `
                 #64748b,
                 #334155
             );
-        color: white;
-    }
 
-    .mystery-question-label {
-        display: block;
-        margin-bottom: 10px;
-        font-size: 15px;
-        font-weight: 900;
-        color: var(--gold);
-        letter-spacing: 1px;
-        text-transform: uppercase;
+        color: white;
     }
 
 
     /* =========================
-       MOBILE MEMORY
+       MOBILE
     ========================= */
 
     @media (max-width: 750px) {
@@ -903,12 +1141,21 @@ extraStyle.textContent = `
         .memory-status {
             font-size: 18px;
         }
+
+        .category-score-teams {
+            grid-template-columns: 1fr;
+        }
+
+        .category-total-row {
+            grid-template-columns: 1fr;
+        }
     }
 
 
     @media (max-width: 500px) {
 
-        .all-teams-panel {
+        .all-teams-panel,
+        .category-score-panel {
             padding: 0 18px 22px;
         }
 
@@ -937,15 +1184,19 @@ extraStyle.textContent = `
         .memory-status {
             font-size: 16px;
         }
+
+        .category-score-panel {
+            padding: 0 12px 22px;
+        }
     }
 `;
 
 document.head.appendChild(extraStyle);
 
 
-// =========================
+// =========================================================
 // TIMER UI
-// =========================
+// =========================================================
 
 const timerBox =
     document.createElement("div");
@@ -987,16 +1238,16 @@ timerBox.append(
 );
 
 
-// Put timer between team badge and question
+// Put timer before question
 modalQuestion.parentNode.insertBefore(
     timerBox,
     modalQuestion
 );
 
 
-// =========================
+// =========================================================
 // 🧠 MEMORY CHALLENGE UI
-// =========================
+// =========================================================
 
 const memoryChallengeBox =
     document.createElement("div");
@@ -1005,12 +1256,15 @@ memoryChallengeBox.className =
     "memory-challenge-box hidden";
 
 memoryChallengeBox.innerHTML = `
+
     <div class="memory-image-wrapper">
+
         <img
             class="memory-challenge-image"
             src="${MEMORY_IMAGE_PATH}"
             alt="Memory Challenge"
         >
+
     </div>
 
     <div class="memory-status">
@@ -1019,7 +1273,6 @@ memoryChallengeBox.innerHTML = `
 `;
 
 
-// Put memory image BEFORE the question text
 modalQuestion.parentNode.insertBefore(
     memoryChallengeBox,
     modalQuestion
@@ -1037,9 +1290,9 @@ const memoryStatus =
     );
 
 
-// =========================
-// MEMORY CHALLENGE HELPER
-// =========================
+// =========================================================
+// MEMORY HELPERS
+// =========================================================
 
 function isMemoryChallenge() {
 
@@ -1102,9 +1355,9 @@ function finishMemoryChallenge() {
 }
 
 
-// =========================
-// ALL-TEAMS SCORING PANEL
-// =========================
+// =========================================================
+// ALL TEAMS PANEL
+// =========================================================
 
 const allTeamsPanel =
     document.createElement("div");
@@ -1117,37 +1370,49 @@ questionCard.appendChild(
 );
 
 
-// =========================
+// =========================================================
 // NOBODY KNOWS BUTTON
-// =========================
+// =========================================================
 
 const nobodyBtn =
     document.createElement("button");
 
 nobodyBtn.type = "button";
-nobodyBtn.className = "nobody-btn";
+
+nobodyBtn.className =
+    "nobody-btn";
 
 teamSelectionModal
     .querySelector(".selection-body")
     .appendChild(nobodyBtn);
 
 
-// =========================
+// =========================================================
 // STATIC TEXT
-// =========================
+// =========================================================
 
 function applyStaticText() {
 
-    document
-        .querySelector("#setupScreen .subtitle")
-        .textContent =
-        TEXT.setupSubtitle;
+    const setupSubtitle =
+        document.querySelector(
+            "#setupScreen .subtitle"
+        );
+
+    if (setupSubtitle) {
+        setupSubtitle.textContent =
+            TEXT.setupSubtitle;
+    }
 
 
-    document
-        .querySelector("#setupScreen .team-count small")
-        .textContent =
-        TEXT.teams;
+    const teamSmall =
+        document.querySelector(
+            "#setupScreen .team-count small"
+        );
+
+    if (teamSmall) {
+        teamSmall.textContent =
+            TEXT.teams;
+    }
 
 
     startGameBtn.textContent =
@@ -1166,20 +1431,26 @@ function applyStaticText() {
         TEXT.wrong;
 
 
-    document
-        .querySelector(
+    const selectionTitle =
+        document.querySelector(
             "#teamSelectionModal .selection-header h2"
-        )
-        .textContent =
-        TEXT.wrongTitle;
+        );
+
+    if (selectionTitle) {
+        selectionTitle.textContent =
+            TEXT.wrongTitle;
+    }
 
 
-    document
-        .querySelector(
+    const selectionText =
+        document.querySelector(
             "#teamSelectionModal .selection-body p"
-        )
-        .textContent =
-        TEXT.chooseTeam;
+        );
+
+    if (selectionText) {
+        selectionText.textContent =
+            TEXT.chooseTeam;
+    }
 
 
     nobodyBtn.textContent =
@@ -1203,7 +1474,6 @@ function applyStaticText() {
         "dialog"
     );
 
-
     questionModal.setAttribute(
         "aria-modal",
         "true"
@@ -1215,7 +1485,6 @@ function applyStaticText() {
         "dialog"
     );
 
-
     teamSelectionModal.setAttribute(
         "aria-modal",
         "true"
@@ -1223,18 +1492,18 @@ function applyStaticText() {
 }
 
 
-// =========================
+// =========================================================
 // INITIALIZE
-// =========================
+// =========================================================
 
 applyStaticText();
 
 renderTeamSetup();
 
 
-// =========================
+// =========================================================
 // ADD TEAM
-// =========================
+// =========================================================
 
 addTeamBtn.addEventListener(
     "click",
@@ -1245,7 +1514,9 @@ addTeamBtn.addEventListener(
         }
 
         teams.push(
-            createTeam(teams.length + 1)
+            createTeam(
+                teams.length + 1
+            )
         );
 
         renderTeamSetup();
@@ -1253,9 +1524,9 @@ addTeamBtn.addEventListener(
 );
 
 
-// =========================
+// =========================================================
 // REMOVE TEAM
-// =========================
+// =========================================================
 
 removeTeamBtn.addEventListener(
     "click",
@@ -1272,16 +1543,17 @@ removeTeamBtn.addEventListener(
 );
 
 
-// =========================
+// =========================================================
 // RENDER TEAM SETUP
-// =========================
+// =========================================================
 
 function renderTeamSetup() {
 
     teamCountElement.textContent =
         teams.length;
 
-    teamListElement.innerHTML = "";
+    teamListElement.innerHTML =
+        "";
 
 
     teams.forEach(
@@ -1301,7 +1573,9 @@ function renderTeamSetup() {
                 "team-number";
 
             label.textContent =
-                TEXT.teamLabel(index + 1);
+                TEXT.teamLabel(
+                    index + 1
+                );
 
 
             const input =
@@ -1344,15 +1618,14 @@ function renderTeamSetup() {
     addTeamBtn.disabled =
         teams.length >= MAX_TEAMS;
 
-
     removeTeamBtn.disabled =
         teams.length <= MIN_TEAMS;
 }
 
 
-// =========================
+// =========================================================
 // START GAME
-// =========================
+// =========================================================
 
 startGameBtn.addEventListener(
     "click",
@@ -1363,7 +1636,9 @@ startGameBtn.addEventListener(
 
                 team.name =
                     team.name.trim() ||
-                    defaultTeamName(team.id);
+                    defaultTeamName(
+                        team.id
+                    );
             }
         );
 
@@ -1388,13 +1663,14 @@ startGameBtn.addEventListener(
 );
 
 
-// =========================
+// =========================================================
 // RENDER SCOREBOARD
-// =========================
+// =========================================================
 
 function renderScoreboard() {
 
-    scoreboardElement.innerHTML = "";
+    scoreboardElement.innerHTML =
+        "";
 
 
     teams.forEach(
@@ -1451,13 +1727,14 @@ function renderScoreboard() {
 }
 
 
-// =========================
+// =========================================================
 // RENDER GAME BOARD
-// =========================
+// =========================================================
 
 function renderGameBoard() {
 
-    gameBoardElement.innerHTML = "";
+    gameBoardElement.innerHTML =
+        "";
 
 
     categories.forEach(
@@ -1496,10 +1773,6 @@ function renderGameBoard() {
                     pointButton.className =
                         "point-tile";
 
-
-                    // =========================
-                    // MYSTERY TILES
-                    // =========================
 
                     if (category.isMystery) {
 
@@ -1552,27 +1825,13 @@ function renderGameBoard() {
 }
 
 
-// =========================
-// GET RANDOM MYSTERY REWARD
-// =========================
-
-function getRandomMysteryReward() {
-
-    const randomIndex =
-        Math.floor(
-            Math.random() *
-            mysteryRewardPool.length
-        );
-
-    return mysteryRewardPool[randomIndex];
-}
-
-
-// =========================
+// =========================================================
 // MYSTERY REWARD UI
-// =========================
+// =========================================================
 
-function showMysteryReward(reward) {
+function showMysteryReward(
+    reward
+) {
 
     const rewardElement =
         document.createElement("div");
@@ -1617,9 +1876,9 @@ function showMysteryReward(reward) {
 }
 
 
-// =========================
+// =========================================================
 // TIMER
-// =========================
+// =========================================================
 
 function updateTimerUI() {
 
@@ -1630,7 +1889,10 @@ function updateTimerUI() {
     timerFill.style.width =
         (
             timeTotal > 0
-                ? (timeLeft / timeTotal) * 100
+                ? (
+                    timeLeft /
+                    timeTotal
+                ) * 100
                 : 0
         ) + "%";
 
@@ -1704,11 +1966,11 @@ function toggleTimer() {
         timeLeft =
             timeTotal;
 
-        // If restarting a memory challenge,
-        // show the image again.
+
         if (isMemoryChallenge()) {
 
             showMemoryChallenge();
+
             hostDecision.classList.add(
                 "hidden"
             );
@@ -1732,17 +1994,11 @@ function toggleTimer() {
                     beep();
 
 
-                    // =========================
-                    // 🧠 MEMORY CHALLENGE ENDS
-                    // =========================
-
                     if (isMemoryChallenge()) {
 
                         finishMemoryChallenge();
 
-                        // Now the host can decide
-                        // whether the team's answer
-                        // was correct or wrong.
+
                         hostDecision.classList.remove(
                             "hidden"
                         );
@@ -1754,6 +2010,7 @@ function toggleTimer() {
 
 
                 updateTimerUI();
+
             },
             1000
         );
@@ -1769,9 +2026,9 @@ timerBtn.addEventListener(
 );
 
 
-// =========================
+// =========================================================
 // OPEN QUESTION
-// =========================
+// =========================================================
 
 function openQuestion(
     category,
@@ -1793,14 +2050,21 @@ function openQuestion(
         currentTeamIndex;
 
 
-    // =========================
-    // MYSTERY REWARD
-    // =========================
+    // =====================================================
+    // IMPORTANT:
+    // NO RANDOM MYSTERY POINTS
+    //
+    // If reward exists, use it.
+    // Otherwise reward = 0.
+    // =====================================================
 
-    if (category.isMystery) {
+    if (
+        category.isMystery &&
+        typeof questionData.reward === "number"
+    ) {
 
         currentMysteryReward =
-            getRandomMysteryReward();
+            questionData.reward;
 
     } else {
 
@@ -1833,6 +2097,10 @@ function openQuestion(
             questionData.awards ||
             [100, 50],
 
+        specialScoring:
+            questionData.specialScoring ||
+            null,
+
         isMystery:
             !!category.isMystery,
 
@@ -1855,9 +2123,9 @@ function openQuestion(
         false;
 
 
-    // =========================
+    // =====================================================
     // FILL MODAL
-    // =========================
+    // =====================================================
 
     modalCategory.textContent =
         currentQuestion.category;
@@ -1883,7 +2151,7 @@ function openQuestion(
         currentQuestion.answer;
 
 
-    // Remove old mystery reward element
+    // Remove old reward
     const oldMysteryReward =
         questionCard.querySelector(
             ".mystery-reward"
@@ -1894,12 +2162,15 @@ function openQuestion(
     }
 
 
-    // Reset memory UI every time
+    // Reset memory
     resetMemoryChallengeUI();
 
 
-    // Reveal mystery reward
-    if (currentQuestion.isMystery) {
+    // Show fixed mystery reward
+    if (
+        currentQuestion.isMystery &&
+        currentQuestion.type !== "allTeams"
+    ) {
 
         showMysteryReward(
             currentMysteryReward
@@ -1907,15 +2178,13 @@ function openQuestion(
     }
 
 
-    // =========================
+    // =====================================================
     // TIMER
-    // =========================
+    // =====================================================
 
     timeTotal =
         questionData.time ||
-        category.time ||
         DEFAULT_TIME;
-
 
     timeLeft =
         timeTotal;
@@ -1929,22 +2198,29 @@ function openQuestion(
     stopTimer();
 
 
-    // =========================
-    // RESET PANELS
-    // =========================
+    // =====================================================
+    // RESET ALL-TEAMS
+    // =====================================================
 
     allTeamsPanel.classList.add(
         "hidden"
     );
 
-
     allTeamsPanel.innerHTML =
         "";
 
+    allTeamsPanel.classList.remove(
+        "category-score-panel"
+    );
 
-    // =========================
-    // 🧠 MEMORY CHALLENGE
-    // =========================
+    allTeamsPanel.classList.add(
+        "all-teams-panel"
+    );
+
+
+    // =====================================================
+    // MEMORY CHALLENGE
+    // =====================================================
 
     if (isMemoryChallenge()) {
 
@@ -1957,14 +2233,53 @@ function openQuestion(
             "hidden"
         );
 
-        // IMPORTANT:
-        // Hide Correct/Wrong until
-        // the 20 seconds finish.
         hostDecision.classList.add(
             "hidden"
         );
 
         updateAnsweringTeam();
+
+
+    // =====================================================
+    // SPECIAL 400
+    // =====================================================
+
+    } else if (
+        currentQuestion.type ===
+            "allTeams" &&
+        currentQuestion.specialScoring ===
+            "nameAnimalPlantObjectCountry"
+    ) {
+
+        answerLabel.textContent =
+            TEXT.scoringRule;
+
+
+        answerContainer.classList.remove(
+            "hidden"
+        );
+
+
+        hostDecision.classList.add(
+            "hidden"
+        );
+
+
+        answeringTeamElement.textContent =
+            TEXT.allTeams;
+
+
+        buildNameAnimalPlantPanel();
+
+
+        allTeamsPanel.classList.remove(
+            "hidden"
+        );
+
+
+    // =====================================================
+    // NORMAL ALL TEAMS
+    // =====================================================
 
     } else if (
         currentQuestion.type ===
@@ -1998,14 +2313,17 @@ function openQuestion(
             "hidden"
         );
 
+
+    // =====================================================
+    // NORMAL QUESTION / CHALLENGE / MYSTERY
+    // =====================================================
+
     } else {
 
         answerLabel.textContent =
             currentQuestion.type ===
             "challenge"
-
                 ? TEXT.challengeLabel
-
                 : TEXT.answer;
 
 
@@ -2031,13 +2349,9 @@ function openQuestion(
     );
 
 
-    // =========================
-    // 🧠 AUTO START MEMORY TIMER
-    // =========================
-    //
-    // The memory challenge should
-    // start immediately when opened.
-    //
+    // =====================================================
+    // AUTO START MEMORY TIMER
+    // =====================================================
 
     if (isMemoryChallenge()) {
 
@@ -2060,20 +2374,24 @@ function openQuestion(
 }
 
 
-// =========================
+// =========================================================
 // UPDATE ANSWERING TEAM
-// =========================
+// =========================================================
 
 function updateAnsweringTeam() {
+
+    if (!teams[currentTeamIndex]) {
+        return;
+    }
 
     answeringTeamElement.textContent =
         teams[currentTeamIndex].name;
 }
 
 
-// =========================
+// =========================================================
 // FINISH QUESTION
-// =========================
+// =========================================================
 
 function finishQuestion() {
 
@@ -2082,7 +2400,6 @@ function finishQuestion() {
         currentPointButton.classList.add(
             "used"
         );
-
 
         currentPointButton.disabled =
             true;
@@ -2114,9 +2431,9 @@ function finishQuestion() {
 }
 
 
-// =========================
-// CORRECT ANSWER
-// =========================
+// =========================================================
+// CORRECT
+// =========================================================
 
 correctBtn.addEventListener(
     "click",
@@ -2142,9 +2459,9 @@ correctBtn.addEventListener(
 );
 
 
-// =========================
-// WRONG ANSWER
-// =========================
+// =========================================================
+// WRONG
+// =========================================================
 
 wrongBtn.addEventListener(
     "click",
@@ -2190,24 +2507,27 @@ wrongBtn.addEventListener(
 );
 
 
-// =========================
-// ALL-TEAMS QUESTION
-// =========================
+// =========================================================
+// NORMAL ALL-TEAMS PANEL
+// =========================================================
 
 function buildAllTeamsPanel(
     awardValues
 ) {
 
-    allTeamsPanel.innerHTML = "";
+    allTeamsPanel.innerHTML =
+        "";
 
-    allTeamsAwards = {};
+    allTeamsAwards =
+        {};
 
 
     teams.forEach(
         team => {
 
-            allTeamsAwards[team.id] =
-                0;
+            allTeamsAwards[
+                team.id
+            ] = 0;
 
 
             const row =
@@ -2237,7 +2557,10 @@ function buildAllTeamsPanel(
             const buttons = [];
 
 
-            [0, ...awardValues].forEach(
+            [
+                0,
+                ...awardValues
+            ].forEach(
                 value => {
 
                     const btn =
@@ -2298,19 +2621,369 @@ function buildAllTeamsPanel(
     );
 
 
+    appendAllTeamsConfirmButton();
+}
+
+
+// =========================================================
+// SPECIAL 400
+// اسم / حيوان / نبات / جماد / بلاد
+// =========================================================
+
+const nameAnimalPlantCategories = [
+    "اسم",
+    "حيوان",
+    "نبات",
+    "جماد",
+    "بلاد"
+];
+
+
+function buildNameAnimalPlantPanel() {
+
+    allTeamsPanel.classList.remove(
+        "all-teams-panel"
+    );
+
+    allTeamsPanel.classList.add(
+        "category-score-panel"
+    );
+
+
+    allTeamsPanel.innerHTML =
+        "";
+
+
+    allTeamsAwards =
+        {};
+
+    allTeamsCategoryAwards =
+        {};
+
+
+    // Initialize scores
+    teams.forEach(
+        team => {
+
+            allTeamsAwards[
+                team.id
+            ] = 0;
+
+            allTeamsCategoryAwards[
+                team.id
+            ] = {};
+
+
+            nameAnimalPlantCategories.forEach(
+                categoryName => {
+
+                    allTeamsCategoryAwards[
+                        team.id
+                    ][categoryName] = 0;
+                }
+            );
+        }
+    );
+
+
+    // Intro
+    const intro =
+        document.createElement(
+            "div"
+        );
+
+    intro.className =
+        "category-score-intro";
+
+    intro.textContent =
+        "لكل فئة اختاروا النقاط لكل فريق: 100 للإجابة الصحيحة والمختلفة، 50 إذا كانت الإجابتان نفس الإجابة الصحيحة، و0 إذا لم تكن الإجابة صحيحة.";
+
+
+    allTeamsPanel.appendChild(
+        intro
+    );
+
+
+    // Each category
+    nameAnimalPlantCategories.forEach(
+        categoryName => {
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+            row.className =
+                "category-score-row";
+
+
+            const title =
+                document.createElement(
+                    "div"
+                );
+
+            title.className =
+                "category-score-title";
+
+            title.textContent =
+                categoryName;
+
+
+            row.appendChild(title);
+
+
+            const teamContainer =
+                document.createElement(
+                    "div"
+                );
+
+            teamContainer.className =
+                "category-score-teams";
+
+
+            teams.forEach(
+                team => {
+
+                    const teamBox =
+                        document.createElement(
+                            "div"
+                        );
+
+                    teamBox.className =
+                        "category-team-score";
+
+
+                    const teamName =
+                        document.createElement(
+                            "div"
+                        );
+
+                    teamName.className =
+                        "category-team-name";
+
+                    teamName.textContent =
+                        team.name;
+
+
+                    teamBox.appendChild(
+                        teamName
+                    );
+
+
+                    const buttonsContainer =
+                        document.createElement(
+                            "div"
+                        );
+
+                    buttonsContainer.className =
+                        "category-score-buttons";
+
+
+                    const buttons = [];
+
+
+                    // 0 / 50 / 100
+                    [
+                        0,
+                        50,
+                        100
+                    ].forEach(
+                        value => {
+
+                            const btn =
+                                document.createElement(
+                                    "button"
+                                );
+
+                            btn.type =
+                                "button";
+
+                            btn.className =
+                                "category-award-btn" +
+                                (
+                                    value === 0
+                                        ? " selected"
+                                        : ""
+                                );
+
+
+                            btn.textContent =
+                                value === 0
+                                    ? "0"
+                                    : `+${value}`;
+
+
+                            btn.addEventListener(
+                                "click",
+                                () => {
+
+                                    allTeamsCategoryAwards[
+                                        team.id
+                                    ][
+                                        categoryName
+                                    ] = value;
+
+
+                                    buttons.forEach(
+                                        button => {
+
+                                            button.classList.toggle(
+                                                "selected",
+                                                button === btn
+                                            );
+                                        }
+                                    );
+
+
+                                    updateNameAnimalPlantTotals();
+                                }
+                            );
+
+
+                            buttons.push(btn);
+
+                            buttonsContainer.appendChild(
+                                btn
+                            );
+                        }
+                    );
+
+
+                    teamBox.appendChild(
+                        buttonsContainer
+                    );
+
+                    teamContainer.appendChild(
+                        teamBox
+                    );
+                }
+            );
+
+
+            row.appendChild(
+                teamContainer
+            );
+
+
+            allTeamsPanel.appendChild(
+                row
+            );
+        }
+    );
+
+
+    // Totals
+    const totalsRow =
+        document.createElement(
+            "div"
+        );
+
+    totalsRow.className =
+        "category-total-row";
+
+    totalsRow.id =
+        "categoryTotals";
+
+
+    allTeamsPanel.appendChild(
+        totalsRow
+    );
+
+
+    updateNameAnimalPlantTotals();
+
+
+    appendAllTeamsConfirmButton();
+}
+
+
+// =========================================================
+// UPDATE SPECIAL 400 TOTALS
+// =========================================================
+
+function updateNameAnimalPlantTotals() {
+
+    const totalsElement =
+        document.getElementById(
+            "categoryTotals"
+        );
+
+
+    if (!totalsElement) {
+        return;
+    }
+
+
+    totalsElement.innerHTML =
+        "";
+
+
+    teams.forEach(
+        team => {
+
+            let total = 0;
+
+
+            nameAnimalPlantCategories.forEach(
+                categoryName => {
+
+                    total +=
+                        allTeamsCategoryAwards[
+                            team.id
+                        ]?.[
+                            categoryName
+                        ] || 0;
+                }
+            );
+
+
+            allTeamsAwards[
+                team.id
+            ] = total;
+
+
+            const totalElement =
+                document.createElement(
+                    "div"
+                );
+
+            totalElement.className =
+                "category-total";
+
+
+            totalElement.innerHTML =
+                `
+                    ${team.name}
+                    <strong>
+                        ${total} نقطة
+                    </strong>
+                `;
+
+
+            totalsElement.appendChild(
+                totalElement
+            );
+        }
+    );
+}
+
+
+// =========================================================
+// CONFIRM ALL TEAMS
+// =========================================================
+
+function appendAllTeamsConfirmButton() {
+
     const confirmBtn =
         document.createElement(
             "button"
         );
 
-
     confirmBtn.type =
         "button";
 
-
     confirmBtn.className =
         "all-team-confirm";
-
 
     confirmBtn.textContent =
         TEXT.confirmPoints;
@@ -2328,6 +3001,10 @@ function buildAllTeamsPanel(
 }
 
 
+// =========================================================
+// FINISH ALL-TEAMS QUESTION
+// =========================================================
+
 function finishAllTeamsQuestion() {
 
     if (
@@ -2338,6 +3015,17 @@ function finishAllTeamsQuestion() {
     }
 
 
+    // Make sure special round totals
+    // are completely updated.
+    if (
+        currentQuestion.specialScoring ===
+        "nameAnimalPlantObjectCountry"
+    ) {
+
+        updateNameAnimalPlantTotals();
+    }
+
+
     let totalAwarded = 0;
 
 
@@ -2345,8 +3033,9 @@ function finishAllTeamsQuestion() {
         team => {
 
             const pts =
-                allTeamsAwards[team.id] ||
-                0;
+                allTeamsAwards[
+                    team.id
+                ] || 0;
 
 
             team.score += pts;
@@ -2358,7 +3047,9 @@ function finishAllTeamsQuestion() {
 
     if (totalAwarded > 0) {
 
-        playSound(correctSound);
+        playSound(
+            correctSound
+        );
     }
 
 
@@ -2371,9 +3062,9 @@ function finishAllTeamsQuestion() {
 }
 
 
-// =========================
+// =========================================================
 // OPEN TEAM SELECTION
-// =========================
+// =========================================================
 
 function openTeamSelection() {
 
@@ -2440,9 +3131,9 @@ function openTeamSelection() {
 }
 
 
-// =========================
+// =========================================================
 // SELECT NEXT TEAM
-// =========================
+// =========================================================
 
 function selectNextTeam(team) {
 
@@ -2477,7 +3168,7 @@ function selectNextTeam(team) {
     );
 
 
-    // New team gets fresh timer
+    // Fresh timer for next team
     resetTimer();
 
 
@@ -2485,9 +3176,9 @@ function selectNextTeam(team) {
 }
 
 
-// =========================
-// NOBODY KNOWS / EVERYONE WRONG
-// =========================
+// =========================================================
+// NOBODY KNOWS
+// =========================================================
 
 function handleNoTeamsRemaining() {
 
@@ -2506,9 +3197,9 @@ nobodyBtn.addEventListener(
 );
 
 
-// =========================
+// =========================================================
 // UPDATE CURRENT TURN
-// =========================
+// =========================================================
 
 function updateCurrentTurn() {
 
@@ -2531,9 +3222,9 @@ function updateCurrentTurn() {
 }
 
 
-// =========================
+// =========================================================
 // CLOSE QUESTION
-// =========================
+// =========================================================
 
 function closeQuestion() {
 
@@ -2559,15 +3250,25 @@ function closeQuestion() {
         "";
 
 
-    // Reset memory UI
+    allTeamsPanel.classList.remove(
+        "category-score-panel"
+    );
+
+    allTeamsPanel.classList.add(
+        "all-teams-panel"
+    );
+
+
+    // Reset memory
     resetMemoryChallengeUI();
 
 
-    // Remove mystery reward UI
+    // Remove mystery reward
     const mysteryRewardElement =
         questionCard.querySelector(
             ".mystery-reward"
         );
+
 
     if (mysteryRewardElement) {
 
@@ -2575,14 +3276,16 @@ function closeQuestion() {
     }
 
 
-    if (questionFinished) {
+    // =====================================================
+    // IMPORTANT TURN LOGIC
+    //
+    // Team 1 picks
+    // Team 1 wrong
+    // Team 3 steals
+    // Next normal turn = Team 2
+    // =====================================================
 
-        // Normal order continues
-        //
-        // Team 1 picks
-        // Team 1 wrong
-        // Team 3 answers
-        // Next normal turn = Team 2
+    if (questionFinished) {
 
         currentTeamIndex =
             (
@@ -2591,9 +3294,6 @@ function closeQuestion() {
             ) % teams.length;
 
     } else {
-
-        // Closed before completion:
-        // return turn to original team
 
         currentTeamIndex =
             questionStartingTeamIndex;
@@ -2604,7 +3304,6 @@ function closeQuestion() {
 
 
     // Clear question state
-
     currentQuestion =
         null;
 
@@ -2620,6 +3319,9 @@ function closeQuestion() {
     allTeamsAwards =
         {};
 
+    allTeamsCategoryAwards =
+        {};
+
     currentMysteryReward =
         0;
 }
@@ -2631,9 +3333,9 @@ closeQuestionBtn.addEventListener(
 );
 
 
-// =========================
+// =========================================================
 // CLOSE TEAM SELECTION
-// =========================
+// =========================================================
 
 closeTeamSelectionBtn.addEventListener(
     "click",
