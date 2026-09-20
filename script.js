@@ -15,6 +15,19 @@ const MAX_TEAMS = 5;
 // Default seconds per question
 const DEFAULT_TIME = 30;
 
+// =========================================================
+// 🧠 MEMORY CHALLENGE IMAGE
+// =========================================================
+//
+// Put your image inside:
+//
+// images/memory-objects.jpg
+//
+// If your filename is different, change ONLY this line.
+//
+
+const MEMORY_IMAGE_PATH = "./images/memory-object.png";
+
 
 // =========================
 // ARABIC UI TEXT
@@ -38,6 +51,10 @@ const TEXT = {
     timerPause: "⏸ إيقاف",
     timerRestart: "↻ إعادة",
     close: "إغلاق",
+
+    // Memory challenge
+    memoryRemembering: "🧠 احفظوا أكبر عدد ممكن من الأشياء!",
+    memoryFinished: "⏰ انتهى الوقت! اذكروا الأشياء التي تذكرونها.",
 
     // Team names are intentionally in English
     teamLabel: n => `Team ${n}`,
@@ -112,19 +129,6 @@ function beep() {
 // =========================
 // MYSTERY REWARD POOL
 // =========================
-//
-// IMPORTANT:
-// The visible board shows ???.
-// When a mystery tile is opened,
-// one of these rewards is randomly selected.
-//
-// Rewards are NOT connected to difficulty.
-//
-// Some are intentionally risky:
-// 0 points
-// negative points
-// jackpot rewards
-//
 
 const mysteryRewardPool = [
     50,
@@ -305,43 +309,42 @@ const categories = [
 
             100: {
                 type: "challenge",
-                time: 20,
-                question:
-                    "تحدي: الفريق لديه 20 ثانية ليجد 5 أشياء سوداء في الغرفة.",
-                answer: "تحدي سرعة"
-            },
-
-            200: {
-                type: "challenge",
                 time: 10,
                 question:
                     "تحدي: اختاروا شخصاً يغني لمدة 10 ثوانٍ، وعلى الفريق إكمال الأغنية معه.",
                 answer: "تحدي غناء"
             },
 
+            200: {
+                type: "challenge",
+                time: 30,
+                question:
+                    "تحدي: الفريق لديه 30 ثانية ليجد 5 أشياء سوداء في الغرفة ويحضرهم عندي.",
+                answer: "تحدي سرعة"
+            },
+
             300: {
                 type: "challenge",
                 time: 60,
                 question:
-                    "تحدي: شخص من الفريق يحاول أن يُحزِّر فريقه كلمة معينة دون التحدث.",
+                    "تحدي: شخص من الفريق يحاول أن يُحزِّر فريقه 6 كلمات دون التحدث",
                 answer: "تمثيل صامت"
             },
 
             400: {
-                type: "allTeams",
+                type: "mystery",
                 time: 30,
-                awards: [100, 50],
                 question:
-                    "تحدي لجميع الفرق: اسم حيوان جماد بلاد بحرف ال.",
+                    "لعبة حبل المشنقة: على الفريق تخمين كلمة مكونة من 6 أحرف. كل حرف خاطئ يضيف جزءاً من المشنقة.",
                 answer:
-                    "كل فريق يكسب 100 نقطة إذا كان جوابه منفرداً وصحيحاً، و 50 نقطة إذا أجاب الجميع بشكل صحيح."
+                    "عنكبوت"
             },
 
             500: {
                 type: "challenge",
-                time: 20,
+                time: 10,
                 question:
-                    "تحدي الذاكرة: سيظهر أمامكم 15 شيئاً لمدة 20 ثانية. بعد إخفائها، اذكروا أكبر عدد ممكن.",
+                    "تحدي الذاكرة: سيظهر أمامكم 15 شيئاً لمدة 10 ثواني. بعد إخفائها، اذكروها كلها.",
                 answer: "تحدي ذاكرة"
             }
         }
@@ -387,21 +390,22 @@ const categories = [
             },
 
             400: {
+                type: "allTeams",
+                time: 30,
+                awards: [100, 50],
+                question:
+                    "تحدي لجميع الفرق: اسم حيوان جماد بلاد بحرف ال.",
+                answer:
+                    "كل فريق يكسب 100 نقطة إذا كان جوابه منفرداً وصحيحاً، و 50 نقطة إذا أجاب نفس الاجابة."
+            },
+
+            500: {
                 type: "mystery",
                 time: 15,
                 question:
                     "⚡ تحدي السرعة: خلال 15 ثانية، على الفريق ذكر 7 أشياء تبدأ بحرف «م». ممنوع تكرار أي إجابة.",
                 answer:
                     "تحدي سرعة"
-            },
-
-            500: {
-                type: "mystery",
-                time: 30,
-                question:
-                    "🎲 مخاطرة! اختاروا شخصاً من الفريق ليجيب على سؤال غريب يختاره المضيف. إذا أقنع المضيف بإجابته، تحصلون على المكافأة. إذا فشل، تخسرونها.",
-                answer:
-                    "قرار المضيف"
             }
         }
     }
@@ -572,6 +576,10 @@ extraStyle.textContent = `
         overflow-y: auto;
     }
 
+    /* =========================
+       TIMER
+    ========================= */
+
     .timer {
         display: flex;
         align-items: center;
@@ -630,6 +638,89 @@ extraStyle.textContent = `
         background: var(--primary);
     }
 
+
+    /* =========================
+       🧠 MEMORY CHALLENGE
+    ========================= */
+
+    .memory-challenge-box {
+        width: 100%;
+        margin: 0 auto 30px;
+        padding: 0 35px;
+        text-align: center;
+    }
+
+    .memory-image-wrapper {
+        width: 100%;
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 12px;
+
+        background:
+            linear-gradient(
+                145deg,
+                rgba(99, 102, 241, 0.18),
+                rgba(251, 191, 36, 0.08)
+            );
+
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 18px;
+
+        box-shadow:
+            0 15px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .memory-challenge-image {
+        display: block;
+        width: 100%;
+        max-height: 440px;
+        object-fit: contain;
+
+        border-radius: 12px;
+
+        background: #0b1020;
+
+        transition:
+            opacity 0.25s ease,
+            transform 0.25s ease;
+    }
+
+    .memory-status {
+        margin-top: 15px;
+
+        font-size: 21px;
+        font-weight: 900;
+
+        color: var(--gold-light);
+
+        text-align: center;
+        direction: rtl;
+    }
+
+    .memory-status.finished {
+        color: #86efac;
+
+        animation:
+            memoryStatusIn 0.3s ease;
+    }
+
+    @keyframes memoryStatusIn {
+        from {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+
+    /* =========================
+       NOBODY BUTTON
+    ========================= */
+
     .nobody-btn {
         width: 100%;
         margin-top: 18px;
@@ -650,6 +741,11 @@ extraStyle.textContent = `
         background: rgba(255, 255, 255, 0.06);
         color: white;
     }
+
+
+    /* =========================
+       ALL TEAMS
+    ========================= */
 
     .all-teams-panel {
         display: flex;
@@ -717,6 +813,11 @@ extraStyle.textContent = `
         cursor: pointer;
     }
 
+
+    /* =========================
+       SCOREBOARD
+    ========================= */
+
     .score-team.active {
         border-color: var(--gold);
 
@@ -724,6 +825,11 @@ extraStyle.textContent = `
             0 0 0 2px rgba(251, 191, 36, 0.35),
             0 5px 15px rgba(0, 0, 0, 0.18);
     }
+
+
+    /* =========================
+       MYSTERY
+    ========================= */
 
     .mystery-board-tile {
         font-size: 30px !important;
@@ -779,6 +885,27 @@ extraStyle.textContent = `
         text-transform: uppercase;
     }
 
+
+    /* =========================
+       MOBILE MEMORY
+    ========================= */
+
+    @media (max-width: 750px) {
+
+        .memory-challenge-box {
+            padding: 0 20px;
+        }
+
+        .memory-challenge-image {
+            max-height: 350px;
+        }
+
+        .memory-status {
+            font-size: 18px;
+        }
+    }
+
+
     @media (max-width: 500px) {
 
         .all-teams-panel {
@@ -791,6 +918,24 @@ extraStyle.textContent = `
 
         .all-team-name {
             flex-basis: 100%;
+        }
+
+        .memory-challenge-box {
+            padding: 0 12px;
+        }
+
+        .memory-image-wrapper {
+            padding: 7px;
+            border-radius: 13px;
+        }
+
+        .memory-challenge-image {
+            max-height: 280px;
+            border-radius: 8px;
+        }
+
+        .memory-status {
+            font-size: 16px;
         }
     }
 `;
@@ -847,6 +992,114 @@ modalQuestion.parentNode.insertBefore(
     timerBox,
     modalQuestion
 );
+
+
+// =========================
+// 🧠 MEMORY CHALLENGE UI
+// =========================
+
+const memoryChallengeBox =
+    document.createElement("div");
+
+memoryChallengeBox.className =
+    "memory-challenge-box hidden";
+
+memoryChallengeBox.innerHTML = `
+    <div class="memory-image-wrapper">
+        <img
+            class="memory-challenge-image"
+            src="${MEMORY_IMAGE_PATH}"
+            alt="Memory Challenge"
+        >
+    </div>
+
+    <div class="memory-status">
+        ${TEXT.memoryRemembering}
+    </div>
+`;
+
+
+// Put memory image BEFORE the question text
+modalQuestion.parentNode.insertBefore(
+    memoryChallengeBox,
+    modalQuestion
+);
+
+
+const memoryChallengeImage =
+    memoryChallengeBox.querySelector(
+        ".memory-challenge-image"
+    );
+
+const memoryStatus =
+    memoryChallengeBox.querySelector(
+        ".memory-status"
+    );
+
+
+// =========================
+// MEMORY CHALLENGE HELPER
+// =========================
+
+function isMemoryChallenge() {
+
+    return (
+        currentQuestion &&
+        currentQuestion.category === "تحدي مجهول" &&
+        currentQuestion.points === 500 &&
+        currentQuestion.type === "challenge"
+    );
+}
+
+
+function resetMemoryChallengeUI() {
+
+    memoryChallengeBox.classList.add(
+        "hidden"
+    );
+
+    memoryChallengeImage.style.display =
+        "block";
+
+    memoryStatus.textContent =
+        TEXT.memoryRemembering;
+
+    memoryStatus.classList.remove(
+        "finished"
+    );
+}
+
+
+function showMemoryChallenge() {
+
+    memoryChallengeBox.classList.remove(
+        "hidden"
+    );
+
+    memoryChallengeImage.style.display =
+        "block";
+
+    memoryStatus.textContent =
+        TEXT.memoryRemembering;
+
+    memoryStatus.classList.remove(
+        "finished"
+    );
+}
+
+
+function finishMemoryChallenge() {
+
+    memoryChallengeImage.style.display =
+        "none";
+
+    memoryStatus.textContent =
+        TEXT.memoryFinished;
+
+    memoryStatus.classList.add(
+        "finished"
+    );
+}
 
 
 // =========================
@@ -1450,6 +1703,16 @@ function toggleTimer() {
 
         timeLeft =
             timeTotal;
+
+        // If restarting a memory challenge,
+        // show the image again.
+        if (isMemoryChallenge()) {
+
+            showMemoryChallenge();
+            hostDecision.classList.add(
+                "hidden"
+            );
+        }
     }
 
 
@@ -1467,6 +1730,24 @@ function toggleTimer() {
                     stopTimer();
 
                     beep();
+
+
+                    // =========================
+                    // 🧠 MEMORY CHALLENGE ENDS
+                    // =========================
+
+                    if (isMemoryChallenge()) {
+
+                        finishMemoryChallenge();
+
+                        // Now the host can decide
+                        // whether the team's answer
+                        // was correct or wrong.
+                        hostDecision.classList.remove(
+                            "hidden"
+                        );
+                    }
+
 
                     return;
                 }
@@ -1613,6 +1894,10 @@ function openQuestion(
     }
 
 
+    // Reset memory UI every time
+    resetMemoryChallengeUI();
+
+
     // Reveal mystery reward
     if (currentQuestion.isMystery) {
 
@@ -1657,7 +1942,31 @@ function openQuestion(
         "";
 
 
-    if (
+    // =========================
+    // 🧠 MEMORY CHALLENGE
+    // =========================
+
+    if (isMemoryChallenge()) {
+
+        showMemoryChallenge();
+
+        answerLabel.textContent =
+            TEXT.challengeLabel;
+
+        answerContainer.classList.add(
+            "hidden"
+        );
+
+        // IMPORTANT:
+        // Hide Correct/Wrong until
+        // the 20 seconds finish.
+        hostDecision.classList.add(
+            "hidden"
+        );
+
+        updateAnsweringTeam();
+
+    } else if (
         currentQuestion.type ===
         "allTeams"
     ) {
@@ -1720,6 +2029,34 @@ function openQuestion(
     questionModal.classList.remove(
         "hidden"
     );
+
+
+    // =========================
+    // 🧠 AUTO START MEMORY TIMER
+    // =========================
+    //
+    // The memory challenge should
+    // start immediately when opened.
+    //
+
+    if (isMemoryChallenge()) {
+
+        setTimeout(
+            () => {
+
+                if (
+                    currentQuestion &&
+                    isMemoryChallenge() &&
+                    !questionFinished
+                ) {
+
+                    toggleTimer();
+                }
+
+            },
+            150
+        );
+    }
 }
 
 
@@ -2184,11 +2521,6 @@ function updateCurrentTurn() {
     }
 
 
-    // Example:
-    // Team 1's Turn
-    // Team 2's Turn
-    // Sharks's Turn
-
     currentTurnElement.textContent =
         TEXT.turn(
             currentTeam.name
@@ -2227,6 +2559,10 @@ function closeQuestion() {
         "";
 
 
+    // Reset memory UI
+    resetMemoryChallengeUI();
+
+
     // Remove mystery reward UI
     const mysteryRewardElement =
         questionCard.querySelector(
@@ -2242,7 +2578,6 @@ function closeQuestion() {
     if (questionFinished) {
 
         // Normal order continues
-        // from the team that picked:
         //
         // Team 1 picks
         // Team 1 wrong
